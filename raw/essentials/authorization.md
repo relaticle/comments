@@ -121,34 +121,34 @@ Create your own policy to customize authorization:
 ```php
 namespace App\Policies;
 
-use Relaticle\Comments\Comment;
-use Relaticle\Comments\Contracts\Commenter;
+use Relaticle\Comments\Models\Comment;
+use Relaticle\Comments\Contracts\Commentator;
 
 class CustomCommentPolicy
 {
-    public function viewAny(Commenter $user): bool
+    public function viewAny(Commentator $user): bool
     {
         return true;
     }
 
-    public function create(Commenter $user): bool
+    public function create(Commentator $user): bool
     {
         return true;
     }
 
-    public function update(Commenter $user, Comment $comment): bool
+    public function update(Commentator $user, Comment $comment): bool
     {
-        return $comment->user_id === $user->getKey()
-            && $comment->user_type === $user->getMorphClass();
+        return $comment->commenter_id === $user->getKey()
+            && $comment->commenter_type === $user->getMorphClass();
     }
 
-    public function delete(Commenter $user, Comment $comment): bool
+    public function delete(Commentator $user, Comment $comment): bool
     {
-        return $comment->user_id === $user->getKey()
+        return $comment->commenter_id === $user->getKey()
             || $user->hasRole('admin');
     }
 
-    public function reply(Commenter $user, Comment $comment): bool
+    public function reply(Commentator $user, Comment $comment): bool
     {
         return $comment->canReply();
     }

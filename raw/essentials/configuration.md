@@ -10,21 +10,34 @@ php artisan vendor:publish --tag=comments-config
 
 This creates `config/comments.php` with all available options.
 
-## Table Name
+## Table Names
 
 ```php
-'tables' => [
+'table_names' => [
     'comments' => 'comments',
+    'reactions' => 'comment_reactions',
+    'mentions' => 'comment_mentions',
+    'subscriptions' => 'comment_subscriptions',
+    'attachments' => 'comment_attachments',
 ],
 ```
 
-Change the table name if it conflicts with your application.
+Change the table names if they conflict with your application.
+
+## Column Names
+
+```php
+'column_names' => [
+    'commenter_id' => 'commenter_id',
+    'commenter_type' => 'commenter_type',
+],
+```
 
 ## Models
 
 ```php
 'models' => [
-    'comment' => \Relaticle\Comments\Comment::class,
+    'comment' => \Relaticle\Comments\Models\Comment::class,
 ],
 
 'commenter' => [
@@ -173,10 +186,10 @@ When broadcasting is disabled, the Livewire component polls for new comments at 
 Override how the authenticated user is resolved:
 
 ```php
-use Relaticle\Comments\Config;
+use Relaticle\Comments\CommentsConfig;
 
 // In AppServiceProvider::boot()
-Config::resolveAuthenticatedUserUsing(function () {
+CommentsConfig::resolveAuthenticatedUserUsing(function () {
     return auth()->user();
 });
 ```

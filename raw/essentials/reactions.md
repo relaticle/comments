@@ -150,4 +150,4 @@ Keys are stored in the database. If you change a key, existing reactions with th
 
 ## Storage
 
-Reactions are stored in the `comment_reactions` table with a unique constraint on `(comment_id, user_id, user_type, reaction)`, ensuring one reaction of each type per user per comment.
+Reactions are stored in the `comment_reactions` table with a unique constraint on `(comment_id, commenter_id, commenter_type, reaction)`, ensuring one reaction of each type per user per comment.

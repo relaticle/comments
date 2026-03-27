@@ -79,7 +79,7 @@ The main comments table with polymorphic relationships and threading support.
   <tr>
     <td>
       <code>
-        user_type
+        commenter_type
       </code>
     </td>
     
@@ -95,7 +95,7 @@ The main comments table with polymorphic relationships and threading support.
   <tr>
     <td>
       <code>
-        user_id
+        commenter_id
       </code>
     </td>
     
@@ -265,7 +265,7 @@ Tracks emoji reactions per user per comment.
   <tr>
     <td>
       <code>
-        user_type
+        commenter_type
       </code>
     </td>
     
@@ -281,7 +281,7 @@ Tracks emoji reactions per user per comment.
   <tr>
     <td>
       <code>
-        user_id
+        commenter_id
       </code>
     </td>
     
@@ -332,7 +332,7 @@ Tracks emoji reactions per user per comment.
 </tbody>
 </table>
 
-**Unique constraint:** `(comment_id, user_id, user_type, reaction)`
+**Unique constraint:** `(comment_id, commenter_id, commenter_type, reaction)`
 
 ### comment_mentions
 
@@ -391,7 +391,7 @@ Tracks @mentioned users per comment.
   <tr>
     <td>
       <code>
-        user_type
+        commenter_type
       </code>
     </td>
     
@@ -407,7 +407,7 @@ Tracks @mentioned users per comment.
   <tr>
     <td>
       <code>
-        user_id
+        commenter_id
       </code>
     </td>
     
@@ -438,7 +438,7 @@ Tracks @mentioned users per comment.
 </tbody>
 </table>
 
-**Unique constraint:** `(comment_id, user_id, user_type)`
+**Unique constraint:** `(comment_id, commenter_id, commenter_type)`
 
 ### comment_subscriptions
 
@@ -513,7 +513,7 @@ Tracks which users are subscribed to comment threads on specific models.
   <tr>
     <td>
       <code>
-        user_type
+        commenter_type
       </code>
     </td>
     
@@ -529,7 +529,7 @@ Tracks which users are subscribed to comment threads on specific models.
   <tr>
     <td>
       <code>
-        user_id
+        commenter_id
       </code>
     </td>
     
@@ -560,7 +560,7 @@ Tracks which users are subscribed to comment threads on specific models.
 </tbody>
 </table>
 
-**Unique constraint:** `(commentable_type, commentable_id, user_type, user_id)`
+**Unique constraint:** `(commentable_type, commentable_id, commenter_type, commenter_id)`
 
 ### comment_attachments
 
@@ -735,11 +735,11 @@ Stores file attachment metadata for comments.
 ```text
 Commentable Model (e.g., Project)
   └── comments (morphMany)
-        ├── user (morphTo → User)
+        ├── commenter (morphTo → User)
         ├── parent (belongsTo → Comment)
         ├── replies (hasMany → Comment)
-        ├── reactions (hasMany → CommentReaction)
-        ├── attachments (hasMany → CommentAttachment)
+        ├── reactions (hasMany → Reaction)
+        ├── attachments (hasMany → Attachment)
         └── mentions (morphToMany → User)
 ```
 

@@ -57,17 +57,17 @@ Users can toggle their subscription using the subscribe/unsubscribe button in th
 ### Programmatic Access
 
 ```php
-use Relaticle\Comments\CommentSubscription;
+use Relaticle\Comments\Models\Subscription;
 
 // Check subscription status
-CommentSubscription::isSubscribed($commentable, $user);
+Subscription::isSubscribed($commentable, $user);
 
 // Subscribe/unsubscribe
-CommentSubscription::subscribe($commentable, $user);
-CommentSubscription::unsubscribe($commentable, $user);
+Subscription::subscribe($commentable, $user);
+Subscription::unsubscribe($commentable, $user);
 
 // Get all subscribers for a commentable
-$subscribers = CommentSubscription::subscribersFor($commentable);
+$subscribers = Subscription::subscribersFor($commentable);
 ```
 
 ## Events

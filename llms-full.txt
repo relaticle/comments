@@ -98,15 +98,15 @@ class Project extends Model implements Commentable
 }
 ```
 
-Add the `IsCommenter` trait to your User model:
+Add the `CanComment` trait to your User model:
 
 ```php [app/Models/User.php]
-use Relaticle\Comments\Concerns\IsCommenter;
-use Relaticle\Comments\Contracts\Commenter;
+use Relaticle\Comments\Concerns\CanComment;
+use Relaticle\Comments\Contracts\Commentator;
 
-class User extends Authenticatable implements Commenter
+class User extends Authenticatable implements Commentator
 {
-    use IsCommenter;
+    use CanComment;
 }
 ```
 
@@ -154,21 +154,34 @@ php artisan vendor:publish --tag=comments-config
 
 This creates `config/comments.php` with all available options.
 
-## Table Name
+## Table Names
 
 ```php
-'tables' => [
+'table_names' => [
     'comments' => 'comments',
+    'reactions' => 'comment_reactions',
+    'mentions' => 'comment_mentions',
+    'subscriptions' => 'comment_subscriptions',
+    'attachments' => 'comment_attachments',
 ],
 ```
 
-Change the table name if it conflicts with your application.
+Change the table names if they conflict with your application.
+
+## Column Names
+
+```php
+'column_names' => [
+    'commenter_id' => 'commenter_id',
+    'commenter_type' => 'commenter_type',
+],
+```
 
 ## Models
 
 ```php
 'models' => [
-    'comment' => \Relaticle\Comments\Comment::class,
+    'comment' => \Relaticle\Comments\Models\Comment::class,
 ],
 
 'commenter' => [
@@ -317,10 +330,10 @@ When broadcasting is disabled, the Livewire component polls for new comments at 
 Override how the authenticated user is resolved:
 
 ```php
-use Relaticle\Comments\Config;
+use Relaticle\Comments\CommentsConfig;
 
 // In AppServiceProvider::boot()
-Config::resolveAuthenticatedUserUsing(function () {
+CommentsConfig::resolveAuthenticatedUserUsing(function () {
     return auth()->user();
 });
 ```
@@ -349,34 +362,34 @@ Create your own policy to customize authorization:
 ```php
 namespace App\Policies;
 
-use Relaticle\Comments\Comment;
-use Relaticle\Comments\Contracts\Commenter;
+use Relaticle\Comments\Models\Comment;
+use Relaticle\Comments\Contracts\Commentator;
 
 class CustomCommentPolicy
 {
-    public function viewAny(Commenter $user): bool
+    public function viewAny(Commentator $user): bool
     {
         return true;
     }
 
-    public function create(Commenter $user): bool
+    public function create(Commentator $user): bool
     {
         return true;
     }
 
-    public function update(Commenter $user, Comment $comment): bool
+    public function update(Commentator $user, Comment $comment): bool
     {
-        return $comment->user_id === $user->getKey()
-            && $comment->user_type === $user->getMorphClass();
+        return $comment->commenter_id === $user->getKey()
+            && $comment->commenter_type === $user->getMorphClass();
     }
 
-    public function delete(Commenter $user, Comment $comment): bool
+    public function delete(Commentator $user, Comment $comment): bool
     {
-        return $comment->user_id === $user->getKey()
+        return $comment->commenter_id === $user->getKey()
             || $user->hasRole('admin');
     }
 
-    public function reply(Commenter $user, Comment $comment): bool
+    public function reply(Commentator $user, Comment $comment): bool
     {
         return $comment->canReply();
     }
@@ -509,7 +522,7 @@ Keys are stored in the database. If you change a key, existing reactions with th
 
 ## Storage
 
-Reactions are stored in the `comment_reactions` table with a unique constraint on `(comment_id, user_id, user_type, reaction)`, ensuring one reaction of each type per user per comment.
+Reactions are stored in the `comment_reactions` table with a unique constraint on `(comment_id, commenter_id, commenter_type, reaction)`, ensuring one reaction of each type per user per comment.
 
 
 # Attachments
@@ -570,7 +583,7 @@ When a comment is deleted, its attachments are cascade deleted from the database
 
 ## Helper Methods
 
-The `CommentAttachment` model provides:
+The `Attachment` model (`Relaticle\Comments\Models\Attachment`) provides:
 
 ```php
 $attachment->isImage();       // Check if attachment is an image
@@ -636,17 +649,17 @@ Users can toggle their subscription using the subscribe/unsubscribe button in th
 ### Programmatic Access
 
 ```php
-use Relaticle\Comments\CommentSubscription;
+use Relaticle\Comments\Models\Subscription;
 
 // Check subscription status
-CommentSubscription::isSubscribed($commentable, $user);
+Subscription::isSubscribed($commentable, $user);
 
 // Subscribe/unsubscribe
-CommentSubscription::subscribe($commentable, $user);
-CommentSubscription::unsubscribe($commentable, $user);
+Subscription::subscribe($commentable, $user);
+Subscription::unsubscribe($commentable, $user);
 
 // Get all subscribers for a commentable
-$subscribers = CommentSubscription::subscribersFor($commentable);
+$subscribers = Subscription::subscribersFor($commentable);
 ```
 
 ## Events
@@ -715,8 +728,8 @@ The main comments table with polymorphic relationships and threading support.
 | `id`               | bigint               | Primary key                      |
 | `commentable_type` | string               | Polymorphic model type           |
 | `commentable_id`   | bigint               | Polymorphic model ID             |
-| `user_type`        | string               | Commenter model type             |
-| `user_id`          | bigint               | Commenter model ID               |
+| `commenter_type`   | string               | Commenter model type             |
+| `commenter_id`     | bigint               | Commenter model ID               |
 | `parent_id`        | bigint (nullable)    | Parent comment for replies       |
 | `body`             | text                 | HTML comment content             |
 | `edited_at`        | timestamp (nullable) | When the comment was last edited |
@@ -730,30 +743,30 @@ The main comments table with polymorphic relationships and threading support.
 
 Tracks emoji reactions per user per comment.
 
-| Column       | Type      | Description                      |
-| ------------ | --------- | -------------------------------- |
-| `id`         | bigint    | Primary key                      |
-| `comment_id` | bigint    | Foreign key to comments          |
-| `user_type`  | string    | Reactor model type               |
-| `user_id`    | bigint    | Reactor model ID                 |
-| `reaction`   | string    | Reaction key (e.g., `thumbs_up`) |
-| `created_at` | timestamp |                                  |
+| Column           | Type      | Description                      |
+| ---------------- | --------- | -------------------------------- |
+| `id`             | bigint    | Primary key                      |
+| `comment_id`     | bigint    | Foreign key to comments          |
+| `commenter_type` | string    | Reactor model type               |
+| `commenter_id`   | bigint    | Reactor model ID                 |
+| `reaction`       | string    | Reaction key (e.g., `thumbs_up`) |
+| `created_at`     | timestamp |                                  |
 
-**Unique constraint:** `(comment_id, user_id, user_type, reaction)`
+**Unique constraint:** `(comment_id, commenter_id, commenter_type, reaction)`
 
 ### comment\_mentions
 
 Tracks @mentioned users per comment.
 
-| Column       | Type      | Description               |
-| ------------ | --------- | ------------------------- |
-| `id`         | bigint    | Primary key               |
-| `comment_id` | bigint    | Foreign key to comments   |
-| `user_type`  | string    | Mentioned user model type |
-| `user_id`    | bigint    | Mentioned user model ID   |
-| `created_at` | timestamp |                           |
+| Column           | Type      | Description               |
+| ---------------- | --------- | ------------------------- |
+| `id`             | bigint    | Primary key               |
+| `comment_id`     | bigint    | Foreign key to comments   |
+| `commenter_type` | string    | Mentioned user model type |
+| `commenter_id`   | bigint    | Mentioned user model ID   |
+| `created_at`     | timestamp |                           |
 
-**Unique constraint:** `(comment_id, user_id, user_type)`
+**Unique constraint:** `(comment_id, commenter_id, commenter_type)`
 
 ### comment\_subscriptions
 
@@ -764,11 +777,11 @@ Tracks which users are subscribed to comment threads on specific models.
 | `id`               | bigint    | Primary key           |
 | `commentable_type` | string    | Subscribed model type |
 | `commentable_id`   | bigint    | Subscribed model ID   |
-| `user_type`        | string    | Subscriber model type |
-| `user_id`          | bigint    | Subscriber model ID   |
+| `commenter_type`   | string    | Subscriber model type |
+| `commenter_id`     | bigint    | Subscriber model ID   |
 | `created_at`       | timestamp |                       |
 
-**Unique constraint:** `(commentable_type, commentable_id, user_type, user_id)`
+**Unique constraint:** `(commentable_type, commentable_id, commenter_type, commenter_id)`
 
 ### comment\_attachments
 
@@ -791,11 +804,11 @@ Stores file attachment metadata for comments.
 ```text
 Commentable Model (e.g., Project)
   └── comments (morphMany)
-        ├── user (morphTo → User)
+        ├── commenter (morphTo → User)
         ├── parent (belongsTo → Comment)
         ├── replies (hasMany → Comment)
-        ├── reactions (hasMany → CommentReaction)
-        ├── attachments (hasMany → CommentAttachment)
+        ├── reactions (hasMany → Reaction)
+        ├── attachments (hasMany → Attachment)
         └── mentions (morphToMany → User)
 ```
 

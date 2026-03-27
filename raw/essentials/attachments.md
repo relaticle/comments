@@ -141,7 +141,7 @@ When a comment is deleted, its attachments are cascade deleted from the database
 
 ## Helper Methods
 
-The `CommentAttachment` model provides:
+The `Attachment` model (`Relaticle\Comments\Models\Attachment`) provides:
 
 ```php
 $attachment->isImage();       // Check if attachment is an image
