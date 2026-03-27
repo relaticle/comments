@@ -15,6 +15,11 @@ A full-featured commenting system for Filament panels with threaded replies, @me
 
 Drop-in integration with any Filament resource.
 
+<alert type="warning">
+
+**Alpha Software** — Breaking changes may occur between releases. Not recommended for production use.
+
+</alert>
 </template>
 
 <template v-slot:links="">
@@ -38,12 +43,6 @@ GitHub
 ![Comments - threaded discussions in Filament](/preview.png)
 
 </div>
-</div>
-
-<div className="text-center,mt-4,text-sm,text-amber-600,dark:text-amber-400">
-
-**Alpha Software** — Breaking changes may occur between releases. Not recommended for production use.
-
 </div>
 
 <u-page-section>

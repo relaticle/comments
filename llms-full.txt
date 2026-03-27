@@ -869,6 +869,12 @@ A full-featured commenting system for Filament panels with threaded replies, @me
 
 Drop-in integration with any Filament resource.
 
+  :::alert{type="warning"}
+  **Alpha Software**
+
+   — Breaking changes may occur between releases. Not recommended for production use.
+  :::
+
 #links
   :::u-button
   ---
@@ -896,10 +902,6 @@ Drop-in integration with any Filament resource.
   :::div{.aspect-video.rounded-lg.shadow-lg.overflow-hidden}
   ![Comments - threaded discussions in Filament](https://relaticle.github.io/comments/preview.png){.w-full.h-full.object-cover.object-top}
   :::
-::
-
-::div{.text-center.mt-4.text-sm.text-amber-600.dark:text-amber-400}
-**Alpha Software** — Breaking changes may occur between releases. Not recommended for production use.
 ::
 
 ::u-page-section
