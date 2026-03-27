@@ -1,0 +1,27 @@
+<svg width="290" height="80" viewBox="0 0 290 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <!-- Chat bubble icon -->
+    <rect x="8" y="12" width="56" height="40" rx="8" fill="url(#bubble_grad)"/>
+    <path d="M20 56L32 48H64" stroke="url(#tail_grad)" stroke-width="0" fill="url(#bubble_grad)"/>
+    <path d="M18 52C18 52 18 60 12 66C18 64 26 60 30 56L18 56Z" fill="url(#tail_grad2)"/>
+    <!-- Three dots -->
+    <circle cx="26" cy="32" r="3.5" fill="white" opacity="0.9"/>
+    <circle cx="36" cy="32" r="3.5" fill="white" opacity="0.9"/>
+    <circle cx="46" cy="32" r="3.5" fill="white" opacity="0.9"/>
+    <!-- "Comments" text -->
+    <text x="78" y="46" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="32" font-weight="600" fill="#18181B" letter-spacing="-0.5">Comments</text>
+    <defs>
+        <linearGradient id="bubble_grad" x1="8" y1="12" x2="64" y2="56" gradientUnits="userSpaceOnUse">
+            <stop stop-color="#A78BFA"/>
+            <stop offset="0.5" stop-color="#8B5CF6"/>
+            <stop offset="1" stop-color="#7C3AED"/>
+        </linearGradient>
+        <linearGradient id="tail_grad" x1="18" y1="52" x2="30" y2="66" gradientUnits="userSpaceOnUse">
+            <stop stop-color="#8B5CF6"/>
+            <stop offset="1" stop-color="#7C3AED"/>
+        </linearGradient>
+        <linearGradient id="tail_grad2" x1="12" y1="52" x2="30" y2="66" gradientUnits="userSpaceOnUse">
+            <stop stop-color="#8B5CF6"/>
+            <stop offset="1" stop-color="#6D28D9"/>
+        </linearGradient>
+    </defs>
+</svg>
