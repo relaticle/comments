@@ -142,13 +142,13 @@ Extend your Laravel applications with our ecosystem of complementary tools
 <card-group>
 <card icon="i-simple-icons-laravel" target="_blank" title="FilaForms" to="https://filaforms.app">
 
-Visual form builder for all your public-facing forms.
+![FilaForms](https://filaforms.app/img/og-image.png)Visual form builder for all your public-facing forms.
 
 </card>
 
 <card icon="i-lucide-sliders" target="_blank" title="Custom Fields" to="https://relaticle.github.io/custom-fields">
 
-Let users add custom fields to any model without code changes.
+![Custom Fields](https://relaticle.github.io/custom-fields/og-image.png)Let users add custom fields to any model without code changes.
 
 </card>
 </card-group>

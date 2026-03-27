@@ -989,6 +989,8 @@ Why choose Comments?
     title: FilaForms
     to: https://filaforms.app
     ---
+    ![FilaForms](https://filaforms.app/img/og-image.png){.mb-4.rounded-lg.w-full.pointer-events-none}
+
     Visual form builder for all your public-facing forms.
     ::::
 
@@ -999,6 +1001,8 @@ Why choose Comments?
     title: Custom Fields
     to: https://relaticle.github.io/custom-fields
     ---
+    ![Custom Fields](https://relaticle.github.io/custom-fields/og-image.png){.mb-4.rounded-lg.w-full.pointer-events-none}
+
     Let users add custom fields to any model without code changes.
     ::::
   :::
