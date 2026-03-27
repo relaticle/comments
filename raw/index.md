@@ -151,11 +151,5 @@ Visual form builder for all your public-facing forms.
 Let users add custom fields to any model without code changes.
 
 </card>
-
-<card icon="i-lucide-kanban" target="_blank" title="Flowforge" to="https://relaticle.github.io/flowforge">
-
-Transform any Laravel model into a drag-and-drop Kanban board.
-
-</card>
 </card-group>
 </u-page-section>
