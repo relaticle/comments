@@ -1,0 +1,24 @@
+# Comments
+
+## Documentation Sets
+
+- [Comments](https://relaticle.github.io/comments/llms-full.txt)
+
+## Docs
+
+- [Introduction](https://relaticle.github.io/comments/raw/getting-started/introduction.md): A full-featured commenting system for Filament panels.
+- [Installation](https://relaticle.github.io/comments/raw/getting-started/installation.md): Get started with Comments in minutes.
+- [Upgrading](https://relaticle.github.io/comments/raw/getting-started/upgrading.md): Upgrade guide for Comments.
+- [Configuration](https://relaticle.github.io/comments/raw/essentials/configuration.md): Configure threading, reactions, mentions, attachments, notifications, and more.
+- [Authorization](https://relaticle.github.io/comments/raw/essentials/authorization.md): Control who can create, edit, delete, and reply to comments.
+- [Mentions](https://relaticle.github.io/comments/raw/essentials/mentions.md): User @mentions with autocomplete and notification support.
+- [Reactions](https://relaticle.github.io/comments/raw/essentials/reactions.md): Emoji reactions on comments.
+- [Attachments](https://relaticle.github.io/comments/raw/essentials/attachments.md): File uploads for comments.
+- [Notifications](https://relaticle.github.io/comments/raw/essentials/notifications.md): Comment notifications, subscriptions, and real-time updates.
+- [Database Schema](https://relaticle.github.io/comments/raw/essentials/database-schema.md): Tables, relationships, and indexes used by the Comments package.
+- [Contributing](https://relaticle.github.io/comments/raw/community/contributing.md): How to contribute to Comments
+- [License](https://relaticle.github.io/comments/raw/community/license.md): MIT License terms and what it means for you
+
+## Landing
+
+- [Filament Comments System](https://relaticle.github.io/comments/raw/index.md): A full-featured commenting system for Filament panels with threaded replies, @mentions, emoji reactions, file attachments, and real-time updates.

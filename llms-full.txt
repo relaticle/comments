@@ -1,0 +1,1021 @@
+# Introduction
+
+Welcome to **Comments**, a powerful Laravel package that adds a full-featured commenting system to any Filament panel.
+
+## What is Comments?
+
+Comments provides polymorphic commenting on any Eloquent model with deep Filament integration. Add threaded discussions, @mentions, emoji reactions, file attachments, and real-time notifications to your admin panel with minimal setup.
+
+## Why Choose Comments?
+
+::card-group
+  :::card{icon="i-lucide-messages-square" title="Threaded Discussions"}
+  Nested replies with configurable depth limits keep conversations organized and easy to follow.
+  :::
+
+  :::card{icon="i-lucide-clock" title="Quick Setup"}
+  Add traits to your models, register the plugin, and you have a working comment system in minutes.
+  :::
+
+  :::card{icon="i-lucide-puzzle" title="3 Integration Patterns"}
+  Use as a slide-over action, table row action, or inline infolist entry - whatever fits your resource.
+  :::
+
+  :::card{icon="i-lucide-bell" title="Built-in Notifications"}
+  Database and mail notifications with subscription management and auto-subscribe for authors and mentioned users.
+  :::
+::
+
+
+# Installation
+
+## Requirements
+
+- **PHP:** 8.2+
+- **Laravel:** 12+
+- **Filament:** 4.x / 5.x
+- **Livewire:** 3.5+ / 4.x
+
+## Quick Setup
+
+::steps
+### Install Package
+
+```bash [Terminal]
+composer require relaticle/comments
+```
+
+### Publish and Run Migrations
+
+```bash [Terminal]
+php artisan vendor:publish --tag=comments-migrations
+php artisan migrate
+```
+
+### Include CSS Assets
+
+Prerequisite: You need a custom Filament theme to include the Comments styles.
+
+  :::alert{type="warning"}
+  If you haven't set up a custom theme for Filament, follow the 
+
+  [Filament Docs](https://filamentphp.com/docs/5.x/styling/overview#creating-a-custom-theme){rel=""nofollow""}
+
+   first.
+  :::
+
+Add the plugin's views to your theme CSS file:
+
+```css [resources/css/filament/admin/theme.css]
+@source "../../../../vendor/relaticle/comments/resources/views/**/*.blade.php";
+```
+
+### Register the Plugin
+
+```php [AdminPanelProvider.php]
+use Relaticle\Comments\CommentsPlugin;
+
+public function panel(Panel $panel): Panel
+{
+    return $panel
+        ->plugins([
+            CommentsPlugin::make(),
+        ]);
+}
+```
+
+### Set Up Your Models
+
+Add the `HasComments` trait to any model you want to comment on:
+
+```php [app/Models/Project.php]
+use Relaticle\Comments\Concerns\HasComments;
+use Relaticle\Comments\Contracts\Commentable;
+
+class Project extends Model implements Commentable
+{
+    use HasComments;
+}
+```
+
+Add the `IsCommenter` trait to your User model:
+
+```php [app/Models/User.php]
+use Relaticle\Comments\Concerns\IsCommenter;
+use Relaticle\Comments\Contracts\Commenter;
+
+class User extends Authenticatable implements Commenter
+{
+    use IsCommenter;
+}
+```
+
+### Add to Your Resources
+
+Use the slide-over action on view or edit pages:
+
+```php [app/Filament/Resources/ProjectResource/Pages/ViewProject.php]
+use Relaticle\Comments\Filament\Actions\CommentsAction;
+
+protected function getHeaderActions(): array
+{
+    return [
+        CommentsAction::make(),
+    ];
+}
+```
+::
+
+**Done!** Visit your Filament panel to see comments in action.
+
+## Optional Configuration
+
+| Command                                                  | Action                                    |
+| -------------------------------------------------------- | ----------------------------------------- |
+| `php artisan vendor:publish --tag=comments-config`       | Publish the configuration file            |
+| `php artisan vendor:publish --tag=comments-views`        | Publish the Blade views for customization |
+| `php artisan vendor:publish --tag=comments-translations` | Publish the translation files             |
+
+
+# Upgrading
+
+## 1.x
+
+This is the initial release of Comments. Future upgrade guides will be documented here as new versions are released.
+
+
+# Configuration
+
+Publish the configuration file:
+
+```bash
+php artisan vendor:publish --tag=comments-config
+```
+
+This creates `config/comments.php` with all available options.
+
+## Table Name
+
+```php
+'tables' => [
+    'comments' => 'comments',
+],
+```
+
+Change the table name if it conflicts with your application.
+
+## Models
+
+```php
+'models' => [
+    'comment' => \Relaticle\Comments\Comment::class,
+],
+
+'commenter' => [
+    'model' => \App\Models\User::class,
+],
+```
+
+Override the Comment model to add custom behavior. The commenter model defines which class represents the user who comments.
+
+## Policy
+
+```php
+'policy' => \Relaticle\Comments\Policies\CommentPolicy::class,
+```
+
+See the [Authorization](https://relaticle.github.io/comments/essentials/authorization) page for customization details.
+
+## Threading
+
+```php
+'threading' => [
+    'max_depth' => 2,
+],
+```
+
+Controls how many levels of nested replies are allowed. A depth of `2` means top-level comments and one level of replies. Set to `1` to disable replies entirely.
+
+## Pagination
+
+```php
+'pagination' => [
+    'per_page' => 10,
+],
+```
+
+Number of comments loaded initially and per "Load More" click.
+
+## Reactions
+
+```php
+'reactions' => [
+    'emoji_set' => [
+        'thumbs_up' => "\u{1F44D}",
+        'heart' => "\u{2764}\u{FE0F}",
+        'celebrate' => "\u{1F389}",
+        'laugh' => "\u{1F604}",
+        'thinking' => "\u{1F914}",
+        'sad' => "\u{1F622}",
+    ],
+],
+```
+
+Customize the available emoji reactions. Keys are used as identifiers in the database, values are the displayed emoji characters.
+
+## Mentions
+
+```php
+'mentions' => [
+    'resolver' => \Relaticle\Comments\Mentions\DefaultMentionResolver::class,
+    'max_results' => 5,
+],
+```
+
+The resolver handles searching for users during @mention autocomplete. See the [Mentions](https://relaticle.github.io/comments/essentials/mentions) page for creating a custom resolver.
+
+## Editor Toolbar
+
+```php
+'editor' => [
+    'toolbar' => [
+        ['bold', 'italic', 'strike', 'link'],
+        ['bulletList', 'orderedList'],
+        ['codeBlock'],
+    ],
+],
+```
+
+Defines which formatting buttons appear in the comment editor. Groups create visual separators in the toolbar.
+
+## Notifications
+
+```php
+'notifications' => [
+    'channels' => ['database'],
+    'enabled' => true,
+],
+```
+
+Add `'mail'` to the channels array to send email notifications. Set `enabled` to `false` to disable all notifications.
+
+## Subscriptions
+
+```php
+'subscriptions' => [
+    'auto_subscribe' => true,
+],
+```
+
+When enabled, users are automatically subscribed to a thread when they create a comment or are mentioned. They receive notifications for subsequent replies.
+
+## Attachments
+
+```php
+'attachments' => [
+    'enabled' => true,
+    'disk' => 'public',
+    'max_size' => 10240, // KB
+    'allowed_types' => [
+        'image/jpeg',
+        'image/png',
+        'image/gif',
+        'image/webp',
+        'application/pdf',
+        'text/plain',
+        'application/msword',
+        'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    ],
+],
+```
+
+Controls file upload behavior. Set `enabled` to `false` to remove the attachment UI entirely. The `max_size` is in kilobytes (default 10 MB).
+
+## Broadcasting
+
+```php
+'broadcasting' => [
+    'enabled' => false,
+    'channel_prefix' => 'comments',
+],
+```
+
+When enabled, comment events are broadcast on private channels using the format `{prefix}.{commentable_type}.{commentable_id}`. Requires Laravel Echo and a broadcasting driver.
+
+## Polling
+
+```php
+'polling' => [
+    'interval' => '10s',
+],
+```
+
+When broadcasting is disabled, the Livewire component polls for new comments at this interval. Set to `null` to disable polling.
+
+## Custom User Resolution
+
+Override how the authenticated user is resolved:
+
+```php
+use Relaticle\Comments\Config;
+
+// In AppServiceProvider::boot()
+Config::resolveAuthenticatedUserUsing(function () {
+    return auth()->user();
+});
+```
+
+This is useful for multi-guard applications or custom authentication flows.
+
+
+# Authorization
+
+## Default Policy
+
+The built-in `CommentPolicy` provides sensible defaults:
+
+| Method      | Default     | Description                           |
+| ----------- | ----------- | ------------------------------------- |
+| `viewAny()` | `true`      | Everyone can view comments            |
+| `create()`  | `true`      | Everyone can create comments          |
+| `update()`  | Owner only  | Only the comment author can edit      |
+| `delete()`  | Owner only  | Only the comment author can delete    |
+| `reply()`   | Depth check | Can reply if `max_depth` not exceeded |
+
+## Custom Policy
+
+Create your own policy to customize authorization:
+
+```php
+namespace App\Policies;
+
+use Relaticle\Comments\Comment;
+use Relaticle\Comments\Contracts\Commenter;
+
+class CustomCommentPolicy
+{
+    public function viewAny(Commenter $user): bool
+    {
+        return true;
+    }
+
+    public function create(Commenter $user): bool
+    {
+        return true;
+    }
+
+    public function update(Commenter $user, Comment $comment): bool
+    {
+        return $comment->user_id === $user->getKey()
+            && $comment->user_type === $user->getMorphClass();
+    }
+
+    public function delete(Commenter $user, Comment $comment): bool
+    {
+        return $comment->user_id === $user->getKey()
+            || $user->hasRole('admin');
+    }
+
+    public function reply(Commenter $user, Comment $comment): bool
+    {
+        return $comment->canReply();
+    }
+}
+```
+
+Register it in your config:
+
+```php
+// config/comments.php
+'policy' => App\Policies\CustomCommentPolicy::class,
+```
+
+## How Authorization Works
+
+The Livewire components check the policy before rendering action buttons. Edit and delete buttons only appear for authorized users. Reply buttons are hidden when the thread has reached the configured `max_depth`.
+
+The policy is registered automatically by the service provider using Laravel's Gate system.
+
+
+# Mentions
+
+## How Mentions Work
+
+Type `@` in the comment editor to trigger user autocomplete. Select a user to insert a mention. When the comment is saved, the `MentionParser` extracts mentions and:
+
+1. Syncs mention records in the `comment_mentions` table
+2. Dispatches a `UserMentioned` event for each newly mentioned user
+3. The `SendUserMentionedNotification` listener sends notifications
+4. If auto-subscribe is enabled, mentioned users are subscribed to the thread
+
+## Default Resolver
+
+The `DefaultMentionResolver` searches the commenter model by name:
+
+```php
+// Searches: User::where('name', 'like', "{$query}%")
+// Limited to: config('comments.mentions.max_results') results
+```
+
+## Custom Mention Resolver
+
+Implement the `MentionResolver` interface to customize user search behavior:
+
+```php
+namespace App\Comments;
+
+use Illuminate\Support\Collection;
+use Relaticle\Comments\Contracts\MentionResolver;
+
+class TeamMentionResolver implements MentionResolver
+{
+    public function search(string $query): Collection
+    {
+        return User::query()
+            ->where('team_id', auth()->user()->team_id)
+            ->where('name', 'like', "{$query}%")
+            ->limit(config('comments.mentions.max_results'))
+            ->get();
+    }
+
+    public function resolveByNames(array $names): Collection
+    {
+        return User::query()
+            ->where('team_id', auth()->user()->team_id)
+            ->whereIn('name', $names)
+            ->get();
+    }
+}
+```
+
+Register it in your config:
+
+```php
+// config/comments.php
+'mentions' => [
+    'resolver' => App\Comments\TeamMentionResolver::class,
+    'max_results' => 5,
+],
+```
+
+## Configuration
+
+| Key                    | Default                         | Description                  |
+| ---------------------- | ------------------------------- | ---------------------------- |
+| `mentions.resolver`    | `DefaultMentionResolver::class` | User search implementation   |
+| `mentions.max_results` | `5`                             | Maximum autocomplete results |
+
+
+# Reactions
+
+## Default Reactions
+
+Six emoji reactions are available out of the box:
+
+| Key         | Emoji      | Label     |
+| ----------- | ---------- | --------- |
+| `thumbs_up` | :thumbsup: | Like      |
+| `heart`     | ❤️         | Love      |
+| `celebrate` | 🎉         | Celebrate |
+| `laugh`     | 😄         | Laugh     |
+| `thinking`  | 🤔         | Thinking  |
+| `sad`       | 😢         | Sad       |
+
+## How Reactions Work
+
+- Each user can add one reaction of each type per comment
+- Clicking the same reaction again removes it (toggle behavior)
+- The reaction summary shows which users reacted with each emoji
+- A `CommentReacted` event is dispatched with `action: 'added'` or `'removed'`
+
+## Customizing Reactions
+
+Override the emoji set in your config:
+
+```php
+// config/comments.php
+'reactions' => [
+    'emoji_set' => [
+        'thumbs_up' => "\u{1F44D}",
+        'thumbs_down' => "\u{1F44E}",
+        'heart' => "\u{2764}\u{FE0F}",
+        'fire' => "\u{1F525}",
+        'eyes' => "\u{1F440}",
+    ],
+],
+```
+
+Keys are stored in the database. If you change a key, existing reactions with the old key will no longer display.
+
+## Storage
+
+Reactions are stored in the `comment_reactions` table with a unique constraint on `(comment_id, user_id, user_type, reaction)`, ensuring one reaction of each type per user per comment.
+
+
+# Attachments
+
+## Overview
+
+Comments support file attachments for both images and documents. Images are displayed inline within the comment body, while documents appear as downloadable links.
+
+## Configuration
+
+```php
+// config/comments.php
+'attachments' => [
+    'enabled' => true,
+    'disk' => 'public',
+    'max_size' => 10240, // KB (10 MB)
+    'allowed_types' => [
+        'image/jpeg',
+        'image/png',
+        'image/gif',
+        'image/webp',
+        'application/pdf',
+        'text/plain',
+        'application/msword',
+        'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    ],
+],
+```
+
+| Key             | Default                 | Description                         |
+| --------------- | ----------------------- | ----------------------------------- |
+| `enabled`       | `true`                  | Show/hide the attachment upload UI  |
+| `disk`          | `'public'`              | Laravel filesystem disk for storage |
+| `max_size`      | `10240`                 | Maximum file size in kilobytes      |
+| `allowed_types` | images, pdf, text, word | Array of allowed MIME types         |
+
+## Disabling Attachments
+
+```php
+'attachments' => [
+    'enabled' => false,
+],
+```
+
+This removes the file upload UI from the comment form entirely.
+
+## Storage
+
+Attachments are stored via Livewire's file upload mechanism. Each attachment record tracks:
+
+- `file_path` -- Path on the configured disk
+- `original_name` -- Original filename for display
+- `mime_type` -- MIME type for rendering decisions
+- `size` -- File size in bytes
+- `disk` -- Storage disk name
+
+When a comment is deleted, its attachments are cascade deleted from the database. The physical files are removed from the disk.
+
+## Helper Methods
+
+The `CommentAttachment` model provides:
+
+```php
+$attachment->isImage();       // Check if attachment is an image
+$attachment->url();           // Get the storage URL
+$attachment->formattedSize(); // Human-readable size (e.g., "2.5 MB")
+```
+
+
+# Notifications
+
+## Notification Types
+
+Two notification classes are included:
+
+### CommentRepliedNotification
+
+Sent to all thread subscribers when a new comment or reply is posted. The comment author is excluded from receiving their own notification.
+
+### UserMentionedNotification
+
+Sent to a user when they are @mentioned in a comment. Self-mentions are ignored.
+
+## Channels
+
+```php
+// config/comments.php
+'notifications' => [
+    'channels' => ['database'],
+    'enabled' => true,
+],
+```
+
+Available channels: `'database'` and `'mail'`. Add both to send email notifications alongside database notifications:
+
+```php
+'notifications' => [
+    'channels' => ['database', 'mail'],
+    'enabled' => true,
+],
+```
+
+## Subscriptions
+
+Users can subscribe to comment threads on any commentable model. Subscribers receive notifications when new comments are posted.
+
+### Auto-Subscribe
+
+```php
+'subscriptions' => [
+    'auto_subscribe' => true,
+],
+```
+
+When enabled:
+
+- Users are auto-subscribed when they post a comment
+- Users are auto-subscribed when they are @mentioned
+
+### Manual Subscription
+
+Users can toggle their subscription using the subscribe/unsubscribe button in the comments UI.
+
+### Programmatic Access
+
+```php
+use Relaticle\Comments\CommentSubscription;
+
+// Check subscription status
+CommentSubscription::isSubscribed($commentable, $user);
+
+// Subscribe/unsubscribe
+CommentSubscription::subscribe($commentable, $user);
+CommentSubscription::unsubscribe($commentable, $user);
+
+// Get all subscribers for a commentable
+$subscribers = CommentSubscription::subscribersFor($commentable);
+```
+
+## Events
+
+| Event            | Trigger                | Broadcasts |
+| ---------------- | ---------------------- | ---------- |
+| `CommentCreated` | New comment or reply   | Yes        |
+| `CommentUpdated` | Comment edited         | Yes        |
+| `CommentDeleted` | Comment soft-deleted   | Yes        |
+| `CommentReacted` | Reaction added/removed | Yes        |
+| `UserMentioned`  | User @mentioned        | No         |
+
+## Real-time Updates
+
+### Broadcasting
+
+Enable broadcasting for instant updates across browser sessions:
+
+```php
+// config/comments.php
+'broadcasting' => [
+    'enabled' => true,
+    'channel_prefix' => 'comments',
+],
+```
+
+Events are broadcast on private channels: `{prefix}.{commentable_type}.{commentable_id}`
+
+This requires Laravel Echo and a broadcasting driver (Pusher, Ably, etc.) configured in your application.
+
+### Polling Fallback
+
+When broadcasting is disabled, the Livewire component polls for updates:
+
+```php
+'polling' => [
+    'interval' => '10s',
+],
+```
+
+Set to `null` to disable polling entirely.
+
+## Disabling Notifications
+
+```php
+'notifications' => [
+    'enabled' => false,
+],
+```
+
+This disables all notification dispatching. Subscriptions and events still work, but no notifications are sent.
+
+
+# Database Schema
+
+## Tables
+
+Five tables are created by the package migrations.
+
+### comments
+
+The main comments table with polymorphic relationships and threading support.
+
+| Column             | Type                 | Description                      |
+| ------------------ | -------------------- | -------------------------------- |
+| `id`               | bigint               | Primary key                      |
+| `commentable_type` | string               | Polymorphic model type           |
+| `commentable_id`   | bigint               | Polymorphic model ID             |
+| `user_type`        | string               | Commenter model type             |
+| `user_id`          | bigint               | Commenter model ID               |
+| `parent_id`        | bigint (nullable)    | Parent comment for replies       |
+| `body`             | text                 | HTML comment content             |
+| `edited_at`        | timestamp (nullable) | When the comment was last edited |
+| `deleted_at`       | timestamp (nullable) | Soft delete timestamp            |
+| `created_at`       | timestamp            |                                  |
+| `updated_at`       | timestamp            |                                  |
+
+**Indexes:** `(commentable_type, commentable_id, parent_id)`
+
+### comment\_reactions
+
+Tracks emoji reactions per user per comment.
+
+| Column       | Type      | Description                      |
+| ------------ | --------- | -------------------------------- |
+| `id`         | bigint    | Primary key                      |
+| `comment_id` | bigint    | Foreign key to comments          |
+| `user_type`  | string    | Reactor model type               |
+| `user_id`    | bigint    | Reactor model ID                 |
+| `reaction`   | string    | Reaction key (e.g., `thumbs_up`) |
+| `created_at` | timestamp |                                  |
+
+**Unique constraint:** `(comment_id, user_id, user_type, reaction)`
+
+### comment\_mentions
+
+Tracks @mentioned users per comment.
+
+| Column       | Type      | Description               |
+| ------------ | --------- | ------------------------- |
+| `id`         | bigint    | Primary key               |
+| `comment_id` | bigint    | Foreign key to comments   |
+| `user_type`  | string    | Mentioned user model type |
+| `user_id`    | bigint    | Mentioned user model ID   |
+| `created_at` | timestamp |                           |
+
+**Unique constraint:** `(comment_id, user_id, user_type)`
+
+### comment\_subscriptions
+
+Tracks which users are subscribed to comment threads on specific models.
+
+| Column             | Type      | Description           |
+| ------------------ | --------- | --------------------- |
+| `id`               | bigint    | Primary key           |
+| `commentable_type` | string    | Subscribed model type |
+| `commentable_id`   | bigint    | Subscribed model ID   |
+| `user_type`        | string    | Subscriber model type |
+| `user_id`          | bigint    | Subscriber model ID   |
+| `created_at`       | timestamp |                       |
+
+**Unique constraint:** `(commentable_type, commentable_id, user_type, user_id)`
+
+### comment\_attachments
+
+Stores file attachment metadata for comments.
+
+| Column          | Type      | Description                |
+| --------------- | --------- | -------------------------- |
+| `id`            | bigint    | Primary key                |
+| `comment_id`    | bigint    | Foreign key to comments    |
+| `file_path`     | string    | Path on the storage disk   |
+| `original_name` | string    | Original uploaded filename |
+| `mime_type`     | string    | File MIME type             |
+| `size`          | bigint    | File size in bytes         |
+| `disk`          | string    | Laravel filesystem disk    |
+| `created_at`    | timestamp |                            |
+| `updated_at`    | timestamp |                            |
+
+## Relationships
+
+```text
+Commentable Model (e.g., Project)
+  └── comments (morphMany)
+        ├── user (morphTo → User)
+        ├── parent (belongsTo → Comment)
+        ├── replies (hasMany → Comment)
+        ├── reactions (hasMany → CommentReaction)
+        ├── attachments (hasMany → CommentAttachment)
+        └── mentions (morphToMany → User)
+```
+
+All relationships are polymorphic, allowing the same comment system to work across any number of models in your application.
+
+
+# Contributing
+
+## Quick Start
+
+1. **Fork** the repository
+2. **Create** a feature branch
+3. **Make** your changes
+4. **Run** tests: `composer test`
+5. **Submit** a pull request
+
+## Guidelines
+
+- Follow the existing code style
+- Add tests for new features
+- Update documentation as needed
+- One feature per pull request
+
+## Development Commands
+
+```bash
+# Run tests
+composer test
+
+# Format code
+composer pint
+
+# Static analysis
+composer analyse
+```
+
+## Need Help?
+
+- [Open an issue](https://github.com/relaticle/comments/issues){rel="&#x22;nofollow&#x22;"} for bugs or questions
+- Check [existing issues](https://github.com/relaticle/comments/issues){rel="&#x22;nofollow&#x22;"} first
+
+
+# License
+
+## MIT License
+
+```text
+Copyright (c) Relaticle
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+```
+
+## What This Means
+
+You **can** use Comments in commercial projects.
+You **can** modify and distribute it.
+You **can** use it in closed source projects.
+You **can** sell applications that include it.
+
+Just include the license notice in your copy.
+
+
+# Filament Comments System
+
+::u-page-hero
+#title
+Comments
+
+#description
+A full-featured commenting system for Filament panels with threaded replies, @mentions, emoji reactions, and real-time updates.
+
+Drop-in integration with any Filament resource.
+
+#links
+  :::u-button
+  ---
+  color: neutral
+  size: xl
+  to: https://relaticle.github.io/comments/getting-started/installation
+  trailing-icon: i-lucide-arrow-right
+  ---
+  Get started
+  :::
+
+  :::u-button
+  ---
+  color: neutral
+  icon: simple-icons:github
+  size: xl
+  to: https://github.com/relaticle/comments
+  variant: outline
+  ---
+  GitHub
+  :::
+::
+
+::u-page-section
+#title
+Why choose Comments?
+
+#features
+  :::u-page-feature
+  ---
+  icon: i-lucide-messages-square
+  ---
+  #title
+  Threaded Replies
+
+  #description
+  Nested comment threads with configurable depth limits. Users can reply to specific comments creating organized discussions.
+  :::
+
+  :::u-page-feature
+  ---
+  icon: i-lucide-at-sign
+  ---
+  #title
+  @Mentions
+
+  #description
+  Autocomplete user mentions with a customizable resolver interface. Dispatches events for notification handling.
+  :::
+
+  :::u-page-feature
+  ---
+  icon: i-lucide-smile
+  ---
+  #title
+  Emoji Reactions
+
+  #description
+  Six built-in emoji reactions with a configurable set. Users can react to comments with a single click.
+  :::
+
+  :::u-page-feature
+  ---
+  icon: i-lucide-paperclip
+  ---
+  #title
+  File Attachments
+
+  #description
+  Upload images and documents to comments with configurable storage, size limits, and MIME type validation.
+  :::
+
+  :::u-page-feature
+  ---
+  icon: i-lucide-radio
+  ---
+  #title
+  Real-time Updates
+
+  #description
+  Optional broadcasting via private channels with automatic polling fallback. Comments stay in sync across sessions.
+  :::
+
+  :::u-page-feature
+  ---
+  icon: i-lucide-puzzle
+  ---
+  #title
+  Full Filament Integration
+
+  #description
+  Three integration patterns: slide-over action, table row action, and infolist entry. Works with any Filament resource.
+  :::
+::
+
+::u-page-section
+  :::card-group
+    ::::card
+    ---
+    icon: i-simple-icons-laravel
+    target: _blank
+    title: FilaForms
+    to: https://filaforms.app
+    ---
+    Visual form builder for all your public-facing forms.
+    ::::
+
+    ::::card
+    ---
+    icon: i-lucide-sliders
+    target: _blank
+    title: Custom Fields
+    to: https://relaticle.github.io/custom-fields
+    ---
+    Let users add custom fields to any model without code changes.
+    ::::
+
+    ::::card
+    ---
+    icon: i-lucide-kanban
+    target: _blank
+    title: Flowforge
+    to: https://relaticle.github.io/flowforge
+    ---
+    Transform any Laravel model into a drag-and-drop Kanban board.
+    ::::
+  :::
+
+#title
+Our Ecosystem
+
+#description
+Extend your Laravel applications with our ecosystem of complementary tools
+::
