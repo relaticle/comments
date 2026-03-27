@@ -6,7 +6,6 @@
 
 ## Docs
 
-- [Introduction](https://relaticle.github.io/comments/raw/getting-started/introduction.md): A full-featured commenting system for Filament panels.
 - [Installation](https://relaticle.github.io/comments/raw/getting-started/installation.md): Get started with Comments in minutes.
 - [Upgrading](https://relaticle.github.io/comments/raw/getting-started/upgrading.md): Upgrade guide for Comments.
 - [Configuration](https://relaticle.github.io/comments/raw/essentials/configuration.md): Configure threading, reactions, mentions, attachments, notifications, and more.

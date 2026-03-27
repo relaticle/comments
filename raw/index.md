@@ -32,6 +32,18 @@ GitHub
 </template>
 </u-page-hero>
 
+<callout color="amber" icon="i-lucide-triangle-alert">
+
+**Alpha Software** -- This package is currently in alpha. The API is not stable and breaking changes may occur between releases without prior notice. Do not use in production unless you are prepared to handle upgrades manually.
+
+</callout>
+
+<div className="max-w-5xl,mx-auto,mt-8">
+
+![Comments - threaded discussions in Filament](/preview.png)
+
+</div>
+
 <u-page-section>
 <template v-slot:title="">
 

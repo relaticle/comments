@@ -1,32 +1,3 @@
-# Introduction
-
-Welcome to **Comments**, a powerful Laravel package that adds a full-featured commenting system to any Filament panel.
-
-## What is Comments?
-
-Comments provides polymorphic commenting on any Eloquent model with deep Filament integration. Add threaded discussions, @mentions, emoji reactions, file attachments, and real-time notifications to your admin panel with minimal setup.
-
-## Why Choose Comments?
-
-::card-group
-  :::card{icon="i-lucide-messages-square" title="Threaded Discussions"}
-  Nested replies with configurable depth limits keep conversations organized and easy to follow.
-  :::
-
-  :::card{icon="i-lucide-clock" title="Quick Setup"}
-  Add traits to your models, register the plugin, and you have a working comment system in minutes.
-  :::
-
-  :::card{icon="i-lucide-puzzle" title="3 Integration Patterns"}
-  Use as a slide-over action, table row action, or inline infolist entry - whatever fits your resource.
-  :::
-
-  :::card{icon="i-lucide-bell" title="Built-in Notifications"}
-  Database and mail notifications with subscription management and auto-subscribe for authors and mentioned users.
-  :::
-::
-
-
 # Installation
 
 ## Requirements
@@ -919,6 +890,16 @@ Drop-in integration with any Filament resource.
   ---
   GitHub
   :::
+::
+
+::callout{color="amber" icon="i-lucide-triangle-alert"}
+**Alpha Software**
+
+ \-- This package is currently in alpha. The API is not stable and breaking changes may occur between releases without prior notice. Do not use in production unless you are prepared to handle upgrades manually.
+::
+
+::div{.max-w-5xl.mx-auto.mt-8}
+![Comments - threaded discussions in Filament](https://relaticle.github.io/comments/preview.png){.rounded-lg.shadow-lg.w-full}
 ::
 
 ::u-page-section
