@@ -892,14 +892,14 @@ Drop-in integration with any Filament resource.
   :::
 ::
 
-::callout{color="amber" icon="i-lucide-triangle-alert"}
-**Alpha Software**
-
- \-- This package is currently in alpha. The API is not stable and breaking changes may occur between releases without prior notice. Do not use in production unless you are prepared to handle upgrades manually.
+::div{.text-center.max-w-5xl.mx-auto}
+  :::div{.aspect-video.rounded-lg.shadow-lg.overflow-hidden}
+  ![Comments - threaded discussions in Filament](https://relaticle.github.io/comments/preview.png){.w-full.h-full.object-cover.object-top}
+  :::
 ::
 
-::div{.max-w-5xl.mx-auto.mt-8}
-![Comments - threaded discussions in Filament](https://relaticle.github.io/comments/preview.png){.rounded-lg.shadow-lg.w-full}
+::div{.text-center.mt-4.text-sm.text-amber-600.dark:text-amber-400}
+**Alpha Software** — Breaking changes may occur between releases. Not recommended for production use.
 ::
 
 ::u-page-section

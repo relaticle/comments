@@ -32,15 +32,17 @@ GitHub
 </template>
 </u-page-hero>
 
-<callout color="amber" icon="i-lucide-triangle-alert">
-
-**Alpha Software** -- This package is currently in alpha. The API is not stable and breaking changes may occur between releases without prior notice. Do not use in production unless you are prepared to handle upgrades manually.
-
-</callout>
-
-<div className="max-w-5xl,mx-auto,mt-8">
+<div className="text-center,max-w-5xl,mx-auto">
+<div className="aspect-video,rounded-lg,shadow-lg,overflow-hidden">
 
 ![Comments - threaded discussions in Filament](/preview.png)
+
+</div>
+</div>
+
+<div className="text-center,mt-4,text-sm,text-amber-600,dark:text-amber-400">
+
+**Alpha Software** — Breaking changes may occur between releases. Not recommended for production use.
 
 </div>
 
