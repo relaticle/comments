@@ -1,1 +1,0 @@
-import{_ as e}from"./Dt_cdDua.js";import{aG as o,a as n,p as s,o as r,q as c}from"./Sa-_S7_w.js";const _={};function f(t,l){const a=e;return r(),n(a,null,{default:s(()=>[c(t.$slots,"default")]),_:3})}const m=o(_,[["render",f]]);export{m as default};

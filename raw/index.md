@@ -15,11 +15,11 @@ A full-featured commenting system for Filament panels with threaded replies, @me
 
 Drop-in integration with any Filament resource.
 
-<alert type="warning">
+<callout color="amber" icon="i-lucide-triangle-alert">
 
 **Alpha Software** — Breaking changes may occur between releases. Not recommended for production use.
 
-</alert>
+</callout>
 </template>
 
 <template v-slot:links="">
