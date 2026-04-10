@@ -15,6 +15,7 @@
 - [Attachments](https://relaticle.github.io/comments/raw/essentials/attachments.md): File uploads for comments.
 - [Notifications](https://relaticle.github.io/comments/raw/essentials/notifications.md): Comment notifications, subscriptions, and real-time updates.
 - [Database Schema](https://relaticle.github.io/comments/raw/essentials/database-schema.md): Tables, relationships, and indexes used by the Comments package.
+- [Multi-tenancy](https://relaticle.github.io/comments/raw/essentials/multi-tenancy.md): Isolate comments per tenant with automatic query scoping and zero boilerplate.
 - [Contributing](https://relaticle.github.io/comments/raw/community/contributing.md): How to contribute to Comments
 - [License](https://relaticle.github.io/comments/raw/community/license.md): MIT License terms and what it means for you
 
