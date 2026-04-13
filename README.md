@@ -1,14 +1,14 @@
 # Comments
 
-![Comments](art/preview.png)
-
-<a href="https://packagist.org/packages/relaticle/comments"><img src="https://img.shields.io/packagist/dt/relaticle/comments.svg?style=for-the-badge" alt="Downloads"></a>
-<a href="https://php.net"><img src="https://img.shields.io/badge/PHP-8.2+-777BB4?style=for-the-badge&logo=php" alt="PHP 8.2+"></a>
-<a href="https://filamentphp.com"><img src="https://img.shields.io/badge/Filament-4.x%20%2F%205.x-F4B740?style=for-the-badge" alt="Filament 4.x / 5.x"></a>
-<a href="https://github.com/relaticle/comments/blob/1.x/LICENSE"><img src="https://img.shields.io/badge/License-MIT-blue.svg?style=for-the-badge" alt="License"></a>
-<a href="https://github.com/relaticle/comments/actions"><img src="https://img.shields.io/github/actions/workflow/status/relaticle/comments/tests.yml?branch=1.x&style=for-the-badge&label=tests" alt="Tests"></a>
+<img src="art/preview.png" alt="Comments System" width="800">
 
 A full-featured commenting system for Filament panels with threaded replies, @mentions, emoji reactions, and real-time updates.
+
+[![Latest Version](https://img.shields.io/packagist/v/relaticle/comments.svg?style=for-the-badge)](https://packagist.org/packages/relaticle/comments)
+[![Total Downloads](https://img.shields.io/packagist/dt/relaticle/comments.svg?style=for-the-badge)](https://packagist.org/packages/relaticle/comments)
+[![PHP 8.2+](https://img.shields.io/badge/php-8.2%2B-blue.svg?style=for-the-badge)](https://php.net)
+[![Laravel 12+](https://img.shields.io/badge/laravel-12%2B-red.svg?style=for-the-badge)](https://laravel.com)
+[![Tests](https://img.shields.io/github/actions/workflow/status/relaticle/comments/tests.yml?branch=1.x&style=for-the-badge&label=tests)](https://github.com/relaticle/comments/actions)
 
 ## Features
 
@@ -22,8 +22,10 @@ A full-featured commenting system for Filament panels with threaded replies, @me
 
 ## Requirements
 
-- PHP 8.2+
-- Filament 4.x / 5.x
+- **PHP:** 8.2+
+- **Laravel:** 12+
+- **Livewire:** 3.5+ / 4.x
+- **Filament:** 4.x / 5.x
 
 ## Getting Started
 
