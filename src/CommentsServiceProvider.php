@@ -4,6 +4,8 @@ namespace Relaticle\Comments;
 
 use Filament\Support\Assets\Css;
 use Filament\Support\Facades\FilamentAsset;
+use Illuminate\Support\Facades\Route;
+use Relaticle\Comments\Http\Controllers\CommentsStyleController;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Gate;
@@ -69,8 +71,6 @@ class CommentsServiceProvider extends PackageServiceProvider
                     ->allowAttribute('data-label', allowedElements: 'span')
                     ->allowAttribute('data-char', allowedElements: 'span')
                     ->allowAttribute('style', allowedElements: '*')
-                    ->allowAttribute('width', allowedElements: 'img')
-                    ->allowAttribute('height', allowedElements: 'img')
                     ->withMaxInputLength(500000)
             ),
         );
@@ -90,8 +90,12 @@ class CommentsServiceProvider extends PackageServiceProvider
         Livewire::component('comment-item', CommentItem::class);
         Livewire::component('reactions', Reactions::class);
 
+        Route::get('/__relaticle-comments/css', CommentsStyleController::class);
+
         FilamentAsset::register([
-            Css::make('comments', __DIR__.'/../resources/css/comments.css'),
+            Css::make('comments')->html(
+                static fn () => '<link rel="stylesheet" href="'.url('/__relaticle-comments/css').'" data-navigate-track />'
+            ),
         ], 'relaticle/comments');
     }
 }

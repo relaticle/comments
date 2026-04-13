@@ -1,4 +1,4 @@
-<div class="space-y-4"
+<div class="comments-wrap"
     @if (!\Relaticle\Comments\CommentsConfig::isBroadcastingEnabled())
         wire:poll.{{ \Relaticle\Comments\CommentsConfig::getPollingInterval() }}
     @endif
@@ -6,6 +6,7 @@
     x-on:livewire-upload-error.window="uploadError = '{{ __('File upload failed. The file may be too large or an unsupported type.') }}'"
     x-on:livewire-upload-start.window="uploadError = null"
 >
+    <div class="comments-body space-y-4">
     {{-- Sort toggle --}}
     <div class="flex items-center justify-between">
         <h3 class="text-sm font-medium text-gray-700 dark:text-gray-300">
@@ -60,11 +61,12 @@
         </div>
     @endif
 
+    </div>{{-- end comments-body --}}
+
     {{-- New comment form - sticky at bottom of slide-over --}}
     @auth
         @can('create', \Relaticle\Comments\CommentsConfig::getCommentModel())
-            <div class="sticky bottom-0 z-10 -mx-4 -mb-4 border-t border-gray-200 bg-white px-4 pb-4 pt-3 dark:border-gray-700 dark:bg-gray-900">
-                {{ $this->commentForm }}
+            <div class="shrink-0 border-t border-gray-200 bg-white px-6 pt-3 dark:border-gray-700 dark:bg-gray-900 -mx-6">                {{ $this->commentForm }}
 
                 @if (!empty($attachments))
                     <div class="mt-2 flex flex-wrap gap-2">

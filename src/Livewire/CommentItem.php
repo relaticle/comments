@@ -82,7 +82,16 @@ class CommentItem extends Component implements HasActions, HasForms
         $this->authorize('update', $this->comment);
 
         $this->isEditing = true;
-        $this->editForm->fill(['body' => $this->comment->body]);
+
+        $body = $this->comment->body;
+
+        foreach ($this->comment->attachments as $attachment) {
+            if ($attachment->isImage()) {
+                $body .= '<img src="'.e($attachment->url()).'" alt="'.e($attachment->original_name).'">';
+            }
+        }
+
+        $this->editForm->fill(['body' => $body]);
     }
 
     public function cancelEdit(): void
@@ -96,9 +105,17 @@ class CommentItem extends Component implements HasActions, HasForms
         $this->authorize('update', $this->comment);
 
         $data = $this->editForm->getState();
+        $body = $data['body'] ?? '';
+
+        foreach ($this->comment->attachments as $attachment) {
+            if ($attachment->isImage()) {
+                $escapedUrl = preg_quote(e($attachment->url()), '/');
+                $body = preg_replace('/<img[^>]*src=["\']'.$escapedUrl.'["\'][^>]*\/?>/i', '', $body);
+            }
+        }
 
         $this->comment->update([
-            'body' => $data['body'] ?? '',
+            'body' => $body,
             'edited_at' => now(),
         ]);
 

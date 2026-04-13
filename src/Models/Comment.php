@@ -158,22 +158,36 @@ class Comment extends Model
     {
         $body = $this->body;
 
-        $mentionNames = $this->mentions->pluck('name')->filter()->unique();
+        $mentionsById = $this->mentions->keyBy('id');
+        $handledIds = [];
 
-        foreach ($mentionNames as $name) {
-            $escapedName = e($name);
-            $styledSpan = '<span class="comment-mention">@'.$escapedName.'</span>';
+        // Replace rich-editor mention spans by data-id (stable identifier, survives renames)
+        $body = preg_replace_callback(
+            '/<(?:span|a)[^>]*data-type="mention"[^>]*>[^<]*<\/(?:span|a)>/',
+            function (array $matches) use ($mentionsById, &$handledIds): string {
+                if (preg_match('/data-id=["\']([^"\']+)["\']/', $matches[0], $idMatch)) {
+                    $id = $idMatch[1];
+                    $user = $mentionsById->get($id);
+                    if ($user !== null) {
+                        $handledIds[] = $id;
 
-            // [^<]*? handles any encoding of @ the sanitizer may produce (e.g. @ or &#64;)
-            $pattern = '/<(?:span|a)[^>]*data-type="mention"[^>]*>[^<]*?'.preg_quote($escapedName, '/').'<\/(?:span|a)>/';
+                        return '<span class="comment-mention">@'.e($user->name).'</span>';
+                    }
+                }
 
-            if (preg_match($pattern, $body)) {
-                $body = preg_replace($pattern, $styledSpan, $body);
-            } else {
-                // Fallback for plain-text mentions
-                $body = str_replace("&#64;{$name}", $styledSpan, $body);
-                $body = str_replace("@{$name}", $styledSpan, $body);
+                return $matches[0];
+            },
+            $body
+        ) ?? $body;
+
+        // Fallback for plain-text @Name mentions (no data-id span available)
+        foreach ($this->mentions as $user) {
+            if (in_array($user->getKey(), $handledIds)) {
+                continue;
             }
+            $styledSpan = '<span class="comment-mention">@'.e($user->name).'</span>';
+            $body = str_replace('&#64;'.$user->name, $styledSpan, $body);
+            $body = str_replace('@'.$user->name, $styledSpan, $body);
         }
 
         return $body;

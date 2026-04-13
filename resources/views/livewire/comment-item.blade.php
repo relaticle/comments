@@ -1,4 +1,4 @@
-<div class="flex gap-3" wire:key="comment-item-{{ $comment->id }}">
+<div class="flex gap-3 mb-8" wire:key="comment-item-{{ $comment->id }}">
     {{-- Avatar --}}
     <div class="shrink-0">
         @if ($comment->trashed())
@@ -34,6 +34,23 @@
             @if ($isEditing)
                 <div class="mt-1">
                     {{ $this->editForm }}
+
+                    @php $fileAttachments = $comment->attachments->filter(fn($a) => !$a->isImage()) @endphp
+                    @if ($fileAttachments->isNotEmpty())
+                        <div class="mt-2 flex flex-wrap gap-2">
+                            @foreach ($fileAttachments as $attachment)
+                                <a href="{{ $attachment->url() }}" target="_blank" rel="noopener noreferrer" download="{{ $attachment->original_name }}"
+                                    class="flex items-center gap-2 rounded border border-gray-200 px-3 py-2 text-sm text-gray-600 hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700">
+                                    <svg class="h-4 w-4 shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />
+                                    </svg>
+                                    <span class="truncate">{{ $attachment->original_name }}</span>
+                                    <span class="shrink-0 text-xs text-gray-400 dark:text-gray-500">({{ $attachment->formattedSize() }})</span>
+                                </a>
+                            @endforeach
+                        </div>
+                    @endif
+
                     <div class="mt-2 flex items-center justify-between">
                         <button type="button" wire:click="cancelEdit" class="text-xs text-gray-500 hover:text-gray-700 dark:text-gray-400">Cancel</button>
                         <button type="button" wire:click="saveEdit" class="text-sm font-medium text-primary-600 hover:text-primary-500 dark:text-primary-400">Save</button>
@@ -49,12 +66,12 @@
                     <div class="mt-2 flex flex-wrap gap-2">
                         @foreach ($comment->attachments as $attachment)
                             @if ($attachment->isImage())
-                                <a href="{{ $attachment->url() }}" target="_blank" class="block">
+                                <a href="{{ $attachment->url() }}" target="_blank" rel="noopener noreferrer" class="block">
                                     <img src="{{ $attachment->url() }}" alt="{{ $attachment->original_name }}"
                                         class="max-h-[200px] rounded border border-gray-200 object-cover dark:border-gray-600" />
                                 </a>
                             @else
-                                <a href="{{ $attachment->url() }}" target="_blank" download="{{ $attachment->original_name }}"
+                                <a href="{{ $attachment->url() }}" target="_blank" rel="noopener noreferrer" download="{{ $attachment->original_name }}"
                                     class="flex items-center gap-2 rounded border border-gray-200 px-3 py-2 text-sm text-gray-600 hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700">
                                     <svg class="h-4 w-4 shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />
@@ -147,7 +164,7 @@
 
         {{-- Nested replies --}}
         @if ($comment->relationLoaded('replies') && $comment->replies->isNotEmpty())
-            <div class="mt-3 space-y-3 border-l-2 border-gray-200 pl-4 dark:border-gray-700">
+            <div class="mt-3 space-y-3 border-l border-gray-200 pl-4 dark:border-gray-700">
                 @foreach ($comment->replies as $reply)
                     <livewire:comment-item :comment="$reply" :key="'comment-'.$reply->id" />
                 @endforeach
