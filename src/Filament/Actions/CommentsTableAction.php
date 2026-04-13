@@ -3,6 +3,7 @@
 namespace Relaticle\Comments\Filament\Actions;
 
 use Filament\Actions\Action;
+use Illuminate\Contracts\View\View;
 use Relaticle\Comments\Concerns\HasComments;
 
 class CommentsTableAction extends Action
@@ -18,7 +19,7 @@ class CommentsTableAction extends Action
             ->modalHeading(__('Comments'))
             ->modalSubmitAction(false)
             ->modalCancelAction(false)
-            ->modalContent(function (): \Illuminate\Contracts\View\View {
+            ->modalContent(function (): View {
                 return view('comments::filament.comments-action', [
                     'record' => $this->getRecord(),
                 ]);

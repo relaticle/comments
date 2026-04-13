@@ -4,15 +4,15 @@ namespace Relaticle\Comments;
 
 use Filament\Support\Assets\Css;
 use Filament\Support\Facades\FilamentAsset;
-use Illuminate\Support\Facades\Route;
-use Relaticle\Comments\Http\Controllers\CommentsStyleController;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Route;
 use Livewire\Livewire;
 use Relaticle\Comments\Contracts\MentionResolver;
 use Relaticle\Comments\Events\CommentCreated;
 use Relaticle\Comments\Events\UserMentioned;
+use Relaticle\Comments\Http\Controllers\CommentsStyleController;
 use Relaticle\Comments\Listeners\SendCommentRepliedNotification;
 use Relaticle\Comments\Listeners\SendUserMentionedNotification;
 use Relaticle\Comments\Livewire\CommentItem;
