@@ -24,9 +24,7 @@ class CommentsAction extends Action
                     'record' => $this->getRecord(),
                 ]);
             })
-            ->badge(function (): ?int {
-                $record = $this->getRecord();
-
+            ->badge(function ($record): ?int {
                 if (! $record) {
                     return null;
                 }
