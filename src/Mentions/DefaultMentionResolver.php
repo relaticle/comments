@@ -13,9 +13,14 @@ class DefaultMentionResolver implements MentionResolver
     public function search(string $query): Collection
     {
         $model = CommentsConfig::getCommenterModel();
+        $builder = $model::query();
 
-        return $model::query()
-            ->where('name', 'like', "{$query}%")
+        foreach (CommentsConfig::getMentionSearchColumns() as $index => $column) {
+            $method = $index === 0 ? 'where' : 'orWhere';
+            $builder->{$method}($column, 'like', "{$query}%");
+        }
+
+        return $builder
             ->limit(CommentsConfig::getMentionMaxResults())
             ->get();
     }
@@ -24,9 +29,10 @@ class DefaultMentionResolver implements MentionResolver
     public function resolveByNames(array $names): Collection
     {
         $model = CommentsConfig::getCommenterModel();
+        $nameColumn = CommentsConfig::getMentionNameColumn();
 
         return $model::query()
-            ->whereIn('name', $names)
+            ->whereIn($nameColumn, $names)
             ->get();
     }
 }

@@ -53,6 +53,21 @@ return [
     'mentions' => [
         'resolver' => DefaultMentionResolver::class,
         'max_results' => 5,
+
+        /*
+         | The database column used to display and resolve user names in mentions.
+         | Change this if your users table stores names in a different column (e.g. 'username', 'full_name').
+         | For computed names (firstname + lastname), leave this as 'name' and use
+         | CommentsConfig::resolveUserNameUsing() in your AppServiceProvider instead.
+         */
+        'name_column' => 'name',
+
+        /*
+         | Columns to search when looking up users during @mention autocomplete.
+         | Useful when the display name is composed of multiple columns (e.g. ['firstname', 'lastname']).
+         | Defaults to ['name'] (or whatever name_column is set to) when not specified.
+         */
+        // 'search_columns' => ['firstname', 'lastname'],
     ],
 
     'editor' => [

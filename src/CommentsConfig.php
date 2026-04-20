@@ -13,6 +13,8 @@ class CommentsConfig
 {
     protected static ?Closure $resolveAuthenticatedUser = null;
 
+    protected static ?Closure $resolveUserName = null;
+
     public static function getCommentModel(): string
     {
         return config('comments.models.comment', Comment::class);
@@ -79,6 +81,37 @@ class CommentsConfig
     public static function getMentionMaxResults(): int
     {
         return (int) config('comments.mentions.max_results', 5);
+    }
+
+    public static function getMentionNameColumn(): string
+    {
+        return (string) config('comments.mentions.name_column', 'name');
+    }
+
+    /** @return array<int, string> */
+    public static function getMentionSearchColumns(): array
+    {
+        $columns = config('comments.mentions.search_columns');
+
+        if (is_array($columns) && count($columns) > 0) {
+            return $columns;
+        }
+
+        return [static::getMentionNameColumn()];
+    }
+
+    public static function resolveUserNameUsing(Closure $callback): void
+    {
+        static::$resolveUserName = $callback;
+    }
+
+    public static function getUserName(object $user): string
+    {
+        if (static::$resolveUserName) {
+            return (string) call_user_func(static::$resolveUserName, $user);
+        }
+
+        return (string) ($user->{static::getMentionNameColumn()} ?? '');
     }
 
     /** @return array<string, string> */
@@ -209,15 +242,25 @@ class CommentsConfig
     public static function makeMentionProvider(): MentionProvider
     {
         return MentionProvider::make('@')
-            ->getSearchResultsUsing(fn (string $search): array => static::getCommenterModel()::query()
-                ->where('name', 'like', "%{$search}%")
-                ->orderBy('name')
-                ->limit(static::getMentionMaxResults())
-                ->pluck('name', 'id')
-                ->all())
+            ->getSearchResultsUsing(function (string $search): array {
+                $query = static::getCommenterModel()::query();
+
+                foreach (static::getMentionSearchColumns() as $index => $column) {
+                    $method = $index === 0 ? 'where' : 'orWhere';
+                    $query->{$method}($column, 'like', "%{$search}%");
+                }
+
+                return $query
+                    ->orderBy(static::getMentionNameColumn())
+                    ->limit(static::getMentionMaxResults())
+                    ->get()
+                    ->mapWithKeys(fn ($user) => [$user->getKey() => static::getUserName($user)])
+                    ->all();
+            })
             ->getLabelsUsing(fn (array $ids): array => static::getCommenterModel()::query()
                 ->whereIn('id', $ids)
-                ->pluck('name', 'id')
+                ->get()
+                ->mapWithKeys(fn ($user) => [$user->getKey() => static::getUserName($user)])
                 ->all());
     }
 }
