@@ -394,11 +394,43 @@ Type `@` in the comment editor to trigger user autocomplete. Select a user to in
 
 ## Default Resolver
 
-The `DefaultMentionResolver` searches the commenter model by name:
+The `DefaultMentionResolver` searches the commenter model using the configured `name_column` (defaults to `name`):
 
 ```php
 // Searches: User::where('name', 'like', "{$query}%")
 // Limited to: config('comments.mentions.max_results') results
+```
+
+### Custom Name Column
+
+If your users table uses a different column for names, set `name_column` in the config:
+
+```php
+// config/comments.php
+'mentions' => [
+    'name_column' => 'username', // or 'full_name', etc.
+],
+```
+
+### Multi-Column Search
+
+If the display name is composed of multiple columns (e.g. `firstname` + `lastname`), configure `search_columns`:
+
+```php
+// config/comments.php
+'mentions' => [
+    'search_columns' => ['firstname', 'lastname'],
+],
+```
+
+Then register a name resolver in your `AppServiceProvider::boot()`:
+
+```php
+use Relaticle\Comments\CommentsConfig;
+
+CommentsConfig::resolveUserNameUsing(
+    fn ($user) => $user->firstname . ' ' . $user->lastname
+);
 ```
 
 ## Custom Mention Resolver
@@ -444,10 +476,12 @@ Register it in your config:
 
 ## Configuration
 
-| Key                    | Default                         | Description                  |
-| ---------------------- | ------------------------------- | ---------------------------- |
-| `mentions.resolver`    | `DefaultMentionResolver::class` | User search implementation   |
-| `mentions.max_results` | `5`                             | Maximum autocomplete results |
+| Key                       | Default                         | Description                               |
+| ------------------------- | ------------------------------- | ----------------------------------------- |
+| `mentions.resolver`       | `DefaultMentionResolver::class` | User search implementation                |
+| `mentions.max_results`    | `5`                             | Maximum autocomplete results              |
+| `mentions.name_column`    | `'name'`                        | DB column used for display and resolution |
+| `mentions.search_columns` | `[name_column]`                 | DB columns searched during autocomplete   |
 
 
 # Reactions

@@ -13,11 +13,43 @@ Type `@` in the comment editor to trigger user autocomplete. Select a user to in
 
 ## Default Resolver
 
-The `DefaultMentionResolver` searches the commenter model by name:
+The `DefaultMentionResolver` searches the commenter model using the configured `name_column` (defaults to `name`):
 
 ```php
 // Searches: User::where('name', 'like', "{$query}%")
 // Limited to: config('comments.mentions.max_results') results
+```
+
+### Custom Name Column
+
+If your users table uses a different column for names, set `name_column` in the config:
+
+```php
+// config/comments.php
+'mentions' => [
+    'name_column' => 'username', // or 'full_name', etc.
+],
+```
+
+### Multi-Column Search
+
+If the display name is composed of multiple columns (e.g. `firstname` + `lastname`), configure `search_columns`:
+
+```php
+// config/comments.php
+'mentions' => [
+    'search_columns' => ['firstname', 'lastname'],
+],
+```
+
+Then register a name resolver in your `AppServiceProvider::boot()`:
+
+```php
+use Relaticle\Comments\CommentsConfig;
+
+CommentsConfig::resolveUserNameUsing(
+    fn ($user) => $user->firstname . ' ' . $user->lastname
+);
 ```
 
 ## Custom Mention Resolver
@@ -114,6 +146,42 @@ Register it in your config:
     
     <td>
       Maximum autocomplete results
+    </td>
+  </tr>
+  
+  <tr>
+    <td>
+      <code>
+        mentions.name_column
+      </code>
+    </td>
+    
+    <td>
+      <code>
+        'name'
+      </code>
+    </td>
+    
+    <td>
+      DB column used for display and resolution
+    </td>
+  </tr>
+  
+  <tr>
+    <td>
+      <code>
+        mentions.search_columns
+      </code>
+    </td>
+    
+    <td>
+      <code>
+        [name_column]
+      </code>
+    </td>
+    
+    <td>
+      DB columns searched during autocomplete
     </td>
   </tr>
 </tbody>
