@@ -93,9 +93,7 @@ class CommentsServiceProvider extends PackageServiceProvider
         Route::get('/__relaticle-comments/css', CommentsStyleController::class);
 
         FilamentAsset::register([
-            Css::make('comments')->html(
-                static fn () => '<link rel="stylesheet" href="'.url('/__relaticle-comments/css').'" data-navigate-track />'
-            ),
+            Css::make('comments', url('/__relaticle-comments/css')),
         ], 'relaticle/comments');
     }
 }
