@@ -68,6 +68,7 @@ abstract class TestCase extends Orchestra
                 ->cascadeOnDelete();
             $table->text('body');
             $table->timestamp('edited_at')->nullable();
+            $table->timestamp('pinned_at')->nullable();
             $table->softDeletes();
             $table->timestamps();
 

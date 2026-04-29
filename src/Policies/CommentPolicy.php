@@ -63,4 +63,9 @@ class CommentPolicy
     {
         return $comment->canReply();
     }
+
+    public function pin(Authenticatable $user, Comment $comment): bool
+    {
+        return false;
+    }
 }

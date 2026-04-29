@@ -54,6 +54,7 @@ class Comment extends Model
         'commenter_id',
         'commenter_type',
         'edited_at',
+        'pinned_at',
     ];
 
     public function getTable(): string
@@ -66,6 +67,7 @@ class Comment extends Model
     {
         return [
             'edited_at' => 'datetime',
+            'pinned_at' => 'datetime',
         ];
     }
 
@@ -133,6 +135,33 @@ class Comment extends Model
     public function isEdited(): bool
     {
         return $this->edited_at !== null;
+    }
+
+    public function isPinned(): bool
+    {
+        return $this->pinned_at !== null;
+    }
+
+    public function pin(): void
+    {
+        $this->update(['pinned_at' => now()]);
+    }
+
+    public function unpin(): void
+    {
+        $this->update(['pinned_at' => null]);
+    }
+
+    /** @param \Illuminate\Database\Eloquent\Builder<static> $query */
+    public function scopePinned(\Illuminate\Database\Eloquent\Builder $query): void
+    {
+        $query->whereNotNull('pinned_at')->orderBy('pinned_at', 'desc');
+    }
+
+    /** @param \Illuminate\Database\Eloquent\Builder<static> $query */
+    public function scopeUnpinned(\Illuminate\Database\Eloquent\Builder $query): void
+    {
+        $query->whereNull('pinned_at');
     }
 
     public function canReply(): bool

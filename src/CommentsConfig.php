@@ -5,6 +5,7 @@ namespace Relaticle\Comments;
 use App\Models\User;
 use Closure;
 use Filament\Forms\Components\RichEditor\MentionProvider;
+use Illuminate\Support\Facades\Gate;
 use Relaticle\Comments\Mentions\DefaultMentionResolver;
 use Relaticle\Comments\Models\Comment;
 use Relaticle\Comments\Policies\CommentPolicy;
@@ -14,6 +15,8 @@ class CommentsConfig
     protected static ?Closure $resolveAuthenticatedUser = null;
 
     protected static ?Closure $resolveUserName = null;
+
+    protected static ?Closure $authorizePin = null;
 
     public static function getCommentModel(): string
     {
@@ -237,6 +240,40 @@ class CommentsConfig
     public static function resolveAuthenticatedUserUsing(Closure $callback): void
     {
         static::$resolveAuthenticatedUser = $callback;
+    }
+
+    public static function isPinningEnabled(): bool
+    {
+        return (bool) config('comments.pinning.enabled', true);
+    }
+
+    public static function getMaxPinned(): ?int
+    {
+        $max = config('comments.pinning.max_pinned');
+
+        return $max !== null ? (int) $max : null;
+    }
+
+    public static function authorizePinUsing(Closure $callback): void
+    {
+        static::$authorizePin = $callback;
+    }
+
+    public static function canPin(object $user, Comment $comment): bool
+    {
+        if (! static::isPinningEnabled()) {
+            return false;
+        }
+
+        if (! $comment->isTopLevel()) {
+            return false;
+        }
+
+        if (static::$authorizePin) {
+            return (bool) call_user_func(static::$authorizePin, $user, $comment);
+        }
+
+        return Gate::forUser($user)->allows('pin', $comment);
     }
 
     public static function makeMentionProvider(): MentionProvider

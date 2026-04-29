@@ -70,6 +70,16 @@ return [
         // 'search_columns' => ['firstname', 'lastname'],
     ],
 
+    'pinning' => [
+        'enabled' => true,
+
+        /*
+         | Maximum number of pinned comments per commentable.
+         | Set to null for unlimited. When the limit is reached, pinning is silently blocked.
+         */
+        'max_pinned' => 3,
+    ],
+
     'editor' => [
         'toolbar' => [
             ['bold', 'italic', 'strike', 'link'],

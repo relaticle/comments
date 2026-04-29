@@ -17,6 +17,8 @@ use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 use Livewire\WithFileUploads;
 use Relaticle\Comments\CommentsConfig;
 use Relaticle\Comments\Events\CommentCreated;
+use Relaticle\Comments\Events\CommentPinned;
+use Relaticle\Comments\Events\CommentUnpinned;
 use Relaticle\Comments\Mentions\MentionParser;
 use Relaticle\Comments\Models\Comment;
 use Relaticle\Comments\Models\Subscription;
@@ -67,10 +69,26 @@ class Comments extends Component implements HasActions, HasForms
 
     /** @return Collection<int, Comment> */
     #[Computed]
+    public function pinnedComments(): Collection
+    {
+        if (! CommentsConfig::isPinningEnabled()) {
+            return new Collection;
+        }
+
+        return $this->model
+            ->topLevelComments()
+            ->pinned()
+            ->with(['commenter', 'mentions', 'attachments', 'reactions.commenter', 'replies.commenter', 'replies.mentions', 'replies.attachments', 'replies.reactions.commenter', 'replies.replies.commenter', 'replies.replies.mentions', 'replies.replies.attachments', 'replies.replies.reactions.commenter'])
+            ->get();
+    }
+
+    /** @return Collection<int, Comment> */
+    #[Computed]
     public function comments(): Collection
     {
         return $this->model
             ->topLevelComments()
+            ->unpinned()
             ->with(['commenter', 'mentions', 'attachments', 'reactions.commenter', 'replies.commenter', 'replies.mentions', 'replies.attachments', 'replies.reactions.commenter', 'replies.replies.commenter', 'replies.replies.mentions', 'replies.replies.attachments', 'replies.replies.reactions.commenter'])
             ->orderBy('created_at', $this->sortDirection)
             ->take($this->loadedCount)
@@ -80,7 +98,7 @@ class Comments extends Component implements HasActions, HasForms
     #[Computed]
     public function totalCount(): int
     {
-        return $this->model->topLevelComments()->count();
+        return $this->model->topLevelComments()->unpinned()->count();
     }
 
     #[Computed]
@@ -205,14 +223,58 @@ class Comments extends Component implements HasActions, HasForms
             $listeners["{$channel},CommentUpdated"] = 'refreshComments';
             $listeners["{$channel},CommentDeleted"] = 'refreshComments';
             $listeners["{$channel},CommentReacted"] = 'refreshComments';
+            $listeners["{$channel},CommentPinned"] = 'refreshComments';
+            $listeners["{$channel},CommentUnpinned"] = 'refreshComments';
         }
 
         return $listeners;
     }
 
+    public function pinComment(int $commentId): void
+    {
+        $comment = $this->model->topLevelComments()->find($commentId);
+        $user = CommentsConfig::resolveAuthenticatedUser();
+
+        if (! $comment) {
+            return;
+        }
+
+        if (! $user || ! CommentsConfig::canPin($user, $comment)) {
+            return;
+        }
+
+        $maxPinned = CommentsConfig::getMaxPinned();
+
+        if ($maxPinned !== null && $this->model->topLevelComments()->pinned()->count() >= $maxPinned) {
+            return;
+        }
+
+        $comment->pin();
+        event(new CommentPinned($comment));
+        $this->refreshComments();
+    }
+
+    public function unpinComment(int $commentId): void
+    {
+        $comment = $this->model->topLevelComments()->find($commentId);
+        $user = CommentsConfig::resolveAuthenticatedUser();
+
+        if (! $comment) {
+            return;
+        }
+
+        if (! $user || ! CommentsConfig::canPin($user, $comment)) {
+            return;
+        }
+
+        $comment->unpin();
+        event(new CommentUnpinned($comment));
+        $this->refreshComments();
+    }
+
     public function refreshComments(): void
     {
-        unset($this->comments, $this->totalCount, $this->hasMore, $this->allCommentsCount);
+        unset($this->comments, $this->pinnedComments, $this->totalCount, $this->hasMore, $this->allCommentsCount);
     }
 
     public function render(): View

@@ -115,6 +115,23 @@
                             Delete
                         </button>
                     @endcan
+
+                    @php
+                        $authenticatedUser = \Relaticle\Comments\CommentsConfig::resolveAuthenticatedUser();
+                    @endphp
+                    @if ($authenticatedUser && \Relaticle\Comments\CommentsConfig::canPin($authenticatedUser, $comment))
+                        @if ($comment->isPinned())
+                            <button wire:click="$parent.unpinComment({{ $comment->id }})" type="button"
+                                class="text-xs text-amber-600 hover:text-amber-500 dark:text-amber-400 dark:hover:text-amber-300">
+                                Unpin
+                            </button>
+                        @else
+                            <button wire:click="$parent.pinComment({{ $comment->id }})" type="button"
+                                class="text-xs text-gray-400 hover:text-amber-500 dark:text-gray-500 dark:hover:text-amber-400">
+                                Pin
+                            </button>
+                        @endif
+                    @endif
                 @endauth
             </div>
         @endif

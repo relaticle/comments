@@ -42,6 +42,7 @@ class CommentsServiceProvider extends PackageServiceProvider
                 'create_comment_reactions_table',
                 'create_comment_subscriptions_table',
                 'create_comment_attachments_table',
+                'add_pinned_at_to_comments_table',
             ]);
     }
 

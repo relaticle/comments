@@ -50,7 +50,7 @@ it('shows badge with comment count when comments exist', function () {
     $action = CommentsAction::make('comments');
     $action->record($post);
 
-    expect($action->getBadge())->toBe(3);
+    expect($action->getBadge())->toBe('3');
 });
 
 it('returns null badge when no comments exist', function () {
