@@ -218,6 +218,17 @@ Customize the available emoji reactions. Keys are used as identifiers in the dat
 
 The resolver handles searching for users during @mention autocomplete. See the [Mentions](https://relaticle.github.io/comments/essentials/mentions) page for creating a custom resolver.
 
+## Pinning
+
+```php
+'pinning' => [
+    'enabled' => true,
+    'max_pinned' => 3,
+],
+```
+
+Controls pinned comments. Set `enabled` to `false` to disable pinning entirely. `max_pinned` limits how many comments can be pinned per thread (`null` for unlimited). See the [Pinning](https://relaticle.github.io/comments/essentials/pinning) page for authorization setup.
+
 ## Editor Toolbar
 
 ```php
@@ -932,6 +943,91 @@ Comment::withoutGlobalScope(TenantScope::class)->get();
 ## Authorization
 
 The global scope filters queries. The `CommentPolicy` independently verifies tenant ownership on `update` and `delete`. Both layers enforce the boundary — the policy does not assume the comment was loaded through a scoped query.
+
+
+# Pinned Comments
+
+## How Pinning Works
+
+Pinned comments appear in a dedicated section above the regular comment list. Only top-level comments (not replies) can be pinned.
+
+When a comment is pinned it is excluded from the regular sorted list so it never appears twice.
+
+## Setup
+
+Pinning is enabled by default but **nobody can pin** until you configure authorization.
+
+### Step 1 — Authorize who can pin
+
+Register a callback in your `AppServiceProvider::boot()`:
+
+```php
+use Relaticle\Comments\CommentsConfig;
+
+CommentsConfig::authorizePinUsing(fn ($user, $comment) => $user->is_admin);
+```
+
+The callback receives the authenticated user and the `Comment` model. Return `true` to allow.
+
+Any logic works:
+
+```php
+// Role-based (e.g. Spatie Permission)
+CommentsConfig::authorizePinUsing(
+    fn ($user, $comment) => $user->hasRole('moderator')
+);
+
+// Comment owner can pin their own
+CommentsConfig::authorizePinUsing(
+    fn ($user, $comment) => $user->getKey() === $comment->commenter_id
+);
+```
+
+### Step 2 (optional) — Config
+
+```php
+// config/comments.php
+'pinning' => [
+    'enabled' => true,
+    'max_pinned' => 3,   // null = unlimited
+],
+```
+
+## Alternative: Custom Policy
+
+Instead of a callback you can override the policy:
+
+```php
+// App/Policies/CustomCommentPolicy.php
+public function pin(Authenticatable $user, Comment $comment): bool
+{
+    return $user->is_admin;
+}
+```
+
+Register it in `config/comments.php`:
+
+```php
+'policy' => App\Policies\CustomCommentPolicy::class,
+```
+
+The `authorizePinUsing` callback takes priority over the policy when both are set.
+
+## Events
+
+| Event             | Fired when            |
+| ----------------- | --------------------- |
+| `CommentPinned`   | A comment is pinned   |
+| `CommentUnpinned` | A comment is unpinned |
+
+Listen to them in your `EventServiceProvider` like any other Laravel event.
+
+## Configuration Reference
+
+| Key                  | Default | Description                                         |
+| -------------------- | ------- | --------------------------------------------------- |
+| `pinning.enabled`    | `true`  | Enable/disable pinning entirely                     |
+| `pinning.max_pinned` | `3`     | Max pinned comments per thread (`null` = unlimited) |
 
 
 # Contributing
