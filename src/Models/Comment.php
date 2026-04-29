@@ -2,6 +2,7 @@
 
 namespace Relaticle\Comments\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -152,14 +153,14 @@ class Comment extends Model
         $this->update(['pinned_at' => null]);
     }
 
-    /** @param \Illuminate\Database\Eloquent\Builder<static> $query */
-    public function scopePinned(\Illuminate\Database\Eloquent\Builder $query): void
+    /** @param Builder<static> $query */
+    public function scopePinned(Builder $query): void
     {
         $query->whereNotNull('pinned_at')->orderBy('pinned_at', 'desc');
     }
 
-    /** @param \Illuminate\Database\Eloquent\Builder<static> $query */
-    public function scopeUnpinned(\Illuminate\Database\Eloquent\Builder $query): void
+    /** @param Builder<static> $query */
+    public function scopeUnpinned(Builder $query): void
     {
         $query->whereNull('pinned_at');
     }
