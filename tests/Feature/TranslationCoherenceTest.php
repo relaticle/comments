@@ -46,6 +46,19 @@ beforeEach(function (): void {
     ], 'en', 'comments');
 });
 
+it('resolves comments::* keys from package lang files (without addLines)', function (): void {
+    // Bypass the addLines override registered in beforeEach — flush the namespace.
+    app('translator')->setLoaded([]);
+
+    expect(__('comments::comments.placeholder'))->not->toStartWith('comments::');
+    expect(__('comments::comments.title'))->not->toStartWith('comments::');
+    expect(__('comments::actions.reply'))->not->toStartWith('comments::');
+    expect(__('comments::reactions.like'))->not->toStartWith('comments::');
+    expect(__('comments::subscriptions.subscribe_short'))->not->toStartWith('comments::');
+    expect(__('comments::attachments.attach'))->not->toStartWith('comments::');
+    expect(__('comments::notifications.reply_subject'))->not->toStartWith('comments::');
+});
+
 it('uses the comments translation namespace for the new-comment placeholder', function (): void {
     $post = Post::factory()->create();
     $user = User::factory()->create();
