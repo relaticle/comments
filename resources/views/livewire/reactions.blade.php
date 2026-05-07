@@ -4,7 +4,7 @@
         <button
             wire:click="toggleReaction('{{ $summary['reaction'] }}')"
             type="button"
-            title="{{ implode(', ', $summary['names']) }}{{ $summary['total_reactors'] > 3 ? ' '.__('comments::comments.reactions.and_others', ['count' => $summary['total_reactors'] - 3]) : '' }}"
+            title="{{ implode(', ', $summary['names']) }}{{ $summary['total_reactors'] > 3 ? ' '.trans_choice('comments::comments.reactions.and_others', $summary['total_reactors'] - 3, ['count' => $summary['total_reactors'] - 3]) : '' }}"
             class="inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-xs transition
                 {{ $summary['reacted_by_user']
                     ? 'border-primary-300 bg-primary-50 text-primary-700 dark:border-primary-600 dark:bg-primary-900/30 dark:text-primary-300'
@@ -45,7 +45,7 @@
                 @foreach (\Relaticle\Comments\CommentsConfig::getReactionEmojiSet() as $key => $emoji)
                     <button wire:click="toggleReaction('{{ $key }}')" type="button"
                             class="rounded p-1 text-base hover:bg-gray-100 dark:hover:bg-gray-700"
-                            title="{{ str_replace('_', ' ', $key) }}">
+                            title="{{ __('comments::comments.reactions.'.$key) }}">
                         {{ $emoji }}
                     </button>
                 @endforeach

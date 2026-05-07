@@ -140,7 +140,7 @@
         @if ($isReplying)
             <div class="mt-3"
                 x-data="{ uploadError: null }"
-                x-on:livewire-upload-error.window="uploadError = '{{ __('comments::comments.attachments.upload_failed') }}'"
+                x-on:livewire-upload-error.window="uploadError = {{ Illuminate\Support\Js::from(__('comments::comments.attachments.upload_failed')) }}"
                 x-on:livewire-upload-start.window="uploadError = null"
             >
                 {{ $this->replyForm }}
