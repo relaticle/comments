@@ -13,7 +13,7 @@ trait CanComment
             return $this->getFilamentName();
         }
 
-        return $this->name ?? 'Unknown';
+        return $this->name ?? __('comments::comments.unknown_user');
     }
 
     public function getCommentAvatarUrl(): ?string

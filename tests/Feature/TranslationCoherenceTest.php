@@ -38,7 +38,7 @@ beforeEach(function (): void {
         'comments.attachments.upload_failed' => 'OVERRIDDEN_UPLOAD_FAILED',
         'comments.reactions.like' => 'OVERRIDDEN_LIKE',
         'comments.reactions.add_reaction' => 'OVERRIDDEN_ADD_REACTION',
-        'comments.reactions.and_others' => 'OVERRIDDEN_AND_:count_OTHERS',
+        'comments.reactions.and_others' => '{1} OVERRIDDEN_AND_ONE_OTHER|[2,*] OVERRIDDEN_AND_:count_OTHERS',
         'comments.notifications.reply_subject' => 'OVERRIDDEN_REPLY_SUBJECT',
         'comments.notifications.reply_body' => 'OVERRIDDEN_REPLY_BODY_BY_:name',
         'comments.notifications.mention_subject' => 'OVERRIDDEN_MENTION_SUBJECT',
@@ -74,7 +74,6 @@ it('uses the comments translation namespace for hardcoded blade strings', functi
     $this->actingAs($user);
 
     Livewire::test(Comments::class, ['model' => $post])
-        ->assertSee('OVERRIDDEN_TITLE')
         ->assertSee('OVERRIDDEN_SUBSCRIBE_SHORT')
         ->assertSee('OVERRIDDEN_SUBMIT')
         ->assertSee('OVERRIDDEN_ATTACH');
@@ -160,4 +159,85 @@ it('uses the comments translation namespace for the reaction summary "and X more
     $html = Livewire::test(Reactions::class, ['comment' => $comment->fresh()])->html();
 
     expect($html)->toContain('OVERRIDDEN_AND_2_OTHERS');
+});
+
+it('encodes upload-failed translation safely for Alpine JS context', function (): void {
+    Lang::addLines([
+        'comments.attachments.upload_failed' => "Quote'and \\backslash and\nnewline",
+    ], 'en', 'comments');
+
+    $post = Post::factory()->create();
+    $user = User::factory()->create();
+    $this->actingAs($user);
+
+    $html = Livewire::test(Comments::class, ['model' => $post])->html();
+
+    // Js::from emits a JSON-encoded string with escaped quotes/backslashes/newlines.
+    // The raw apostrophe must NOT appear unescaped inside the x-on attribute.
+    expect($html)->toContain('uploadError = ');
+    expect($html)->not->toContain("uploadError = 'Quote'");
+});
+
+it('localizes emoji-picker tooltip via reactions namespace', function (): void {
+    Lang::addLines([
+        'comments.reactions.thumbs_up' => 'OVERRIDDEN_THUMBS_UP_TOOLTIP',
+    ], 'en', 'comments');
+
+    $post = Post::factory()->create();
+    $user = User::factory()->create();
+    $this->actingAs($user);
+    $comment = $post->comments()->create([
+        'body' => 'hi',
+        'commenter_id' => $user->getKey(),
+        'commenter_type' => $user->getMorphClass(),
+    ]);
+
+    $html = Livewire::test(Reactions::class, ['comment' => $comment->fresh()])->html();
+
+    expect($html)->toContain('title="OVERRIDDEN_THUMBS_UP_TOOLTIP"');
+});
+
+it('uses comments::comments.count for the section header', function (): void {
+    Lang::addLines([
+        'comments.count' => 'OVERRIDDEN_COUNT_HEADER (:count)',
+    ], 'en', 'comments');
+
+    $post = Post::factory()->create();
+    $user = User::factory()->create();
+    $this->actingAs($user);
+
+    Livewire::test(Comments::class, ['model' => $post])
+        ->assertSee('OVERRIDDEN_COUNT_HEADER (0)');
+});
+
+it('renders singular form when exactly one extra reactor', function (): void {
+    // Restore the package's real plural string for this test (override the beforeEach mock).
+    Lang::addLines([
+        'comments.reactions.and_others' => '{1} and one other|[2,*] and :count others',
+    ], 'en', 'comments');
+
+    $post = Post::factory()->create();
+    $author = User::factory()->create(['name' => 'Author']);
+    $this->actingAs($author);
+
+    $comment = $post->comments()->create([
+        'body' => 'hi',
+        'commenter_id' => $author->getKey(),
+        'commenter_type' => $author->getMorphClass(),
+    ]);
+
+    // 4 reactors total → 3 names + 1 other (singular)
+    foreach (range(1, 4) as $i) {
+        $u = User::factory()->create(['name' => "User{$i}"]);
+        $comment->reactions()->create([
+            'commenter_id' => $u->getKey(),
+            'commenter_type' => $u->getMorphClass(),
+            'reaction' => 'thumbs_up',
+        ]);
+    }
+
+    $html = Livewire::test(Reactions::class, ['comment' => $comment->fresh()])->html();
+
+    expect($html)->toContain('and one other');
+    expect($html)->not->toContain('and 1 others');
 });

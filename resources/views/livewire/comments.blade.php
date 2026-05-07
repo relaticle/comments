@@ -3,14 +3,14 @@
         wire:poll.{{ \Relaticle\Comments\CommentsConfig::getPollingInterval() }}
     @endif
     x-data="{ uploadError: null }"
-    x-on:livewire-upload-error.window="uploadError = '{{ __('comments::comments.attachments.upload_failed') }}'"
+    x-on:livewire-upload-error.window="uploadError = {{ Illuminate\Support\Js::from(__('comments::comments.attachments.upload_failed')) }}"
     x-on:livewire-upload-start.window="uploadError = null"
 >
     <div class="comments-body space-y-4">
     {{-- Sort toggle --}}
     <div class="flex items-center justify-between">
         <h3 class="text-sm font-medium text-gray-700 dark:text-gray-300">
-            {{ __('comments::comments.title') }} ({{ $this->allCommentsCount }})
+            {{ __('comments::comments.count', ['count' => $this->allCommentsCount]) }}
         </h3>
         @auth
             <div class="flex items-center gap-3">

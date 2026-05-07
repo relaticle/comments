@@ -39,7 +39,7 @@ return [
         'thinking' => 'Thinking',
         'sad' => 'Sad',
         'reacted_by' => ':names reacted with :reaction',
-        'and_others' => 'and :count others',
+        'and_others' => '{1} and one other|[2,*] and :count others',
         'like' => 'Like',
         'add_reaction' => 'Add reaction',
     ],
