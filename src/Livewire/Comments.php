@@ -58,7 +58,7 @@ class Comments extends Component implements HasActions, HasForms
                 RichEditor::make('body')
                     ->hiddenLabel()
                     ->required()
-                    ->placeholder(__('Write a comment...'))
+                    ->placeholder(__('comments::comments.placeholder'))
                     ->toolbarButtons(CommentsConfig::getEditorToolbar())
                     ->mentions([
                         CommentsConfig::makeMentionProvider(),

@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Fixed
+- All user-facing strings now resolve from the `comments::` translation namespace, so `php artisan vendor:publish --tag=comments-translations` overrides actually take effect (#21).
+
+### Changed
+- BREAKING (translations only): All UI strings now resolve from `comments::comments.<key>` (or `comments::comments.<group>.<key>` for grouped sections). Apps that published an earlier draft of `comments.php` should re-publish with `php artisan vendor:publish --tag=comments-translations --force`.
+
 ## v1.0.0-alpha.7 - 2026-04-22
 
 <!-- Release notes generated using configuration in .github/release.yml at 1.x -->
