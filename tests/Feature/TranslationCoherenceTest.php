@@ -6,6 +6,9 @@ use Illuminate\Support\Facades\Lang;
 use Livewire\Livewire;
 use Relaticle\Comments\Filament\Actions\CommentsAction;
 use Relaticle\Comments\Livewire\Comments;
+use Relaticle\Comments\Livewire\Reactions;
+use Relaticle\Comments\Notifications\CommentRepliedNotification;
+use Relaticle\Comments\Notifications\UserMentionedNotification;
 use Relaticle\Comments\Tests\Models\Post;
 use Relaticle\Comments\Tests\Models\User;
 
@@ -98,7 +101,7 @@ it('uses the comments translation namespace for the reply notification email', f
         'commenter_type' => $replier->getMorphClass(),
     ]);
 
-    $mail = (new \Relaticle\Comments\Notifications\CommentRepliedNotification($reply))->toMail($author);
+    $mail = (new CommentRepliedNotification($reply))->toMail($author);
 
     expect($mail->subject)->toBe('OVERRIDDEN_REPLY_SUBJECT')
         ->and($mail->introLines)->toContain('OVERRIDDEN_REPLY_BODY_BY_Replier');
@@ -115,7 +118,7 @@ it('uses the comments translation namespace for the mention notification email',
         'commenter_type' => $mentioner->getMorphClass(),
     ]);
 
-    $mail = (new \Relaticle\Comments\Notifications\UserMentionedNotification($comment, $mentioner))->toMail($mentioned);
+    $mail = (new UserMentionedNotification($comment, $mentioner))->toMail($mentioned);
 
     expect($mail->subject)->toBe('OVERRIDDEN_MENTION_SUBJECT')
         ->and($mail->introLines)->toContain('OVERRIDDEN_MENTION_BODY_BY_Mentioner');
@@ -141,7 +144,7 @@ it('uses the comments translation namespace for the reaction summary "and X more
         ]);
     }
 
-    $html = Livewire::test(\Relaticle\Comments\Livewire\Reactions::class, ['comment' => $comment->fresh()])->html();
+    $html = Livewire::test(Reactions::class, ['comment' => $comment->fresh()])->html();
 
     expect($html)->toContain('OVERRIDDEN_AND_2_OTHERS');
 });
