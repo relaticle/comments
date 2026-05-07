@@ -13,10 +13,10 @@ class CommentsAction extends Action
         parent::setUp();
 
         $this
-            ->label(__('Comments'))
+            ->label(__('comments::comments.title'))
             ->icon('heroicon-o-chat-bubble-left-right')
             ->slideOver()
-            ->modalHeading(__('Comments'))
+            ->modalHeading(__('comments::comments.title'))
             ->modalSubmitAction(false)
             ->modalCancelAction(false)
             ->modalContent(function (): View {
