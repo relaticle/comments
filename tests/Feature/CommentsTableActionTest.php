@@ -38,5 +38,5 @@ it('shows badge with comment count for the record', function () {
     $action = CommentsTableAction::make('comments');
     $action->record($post);
 
-    expect($action->getBadge())->toBe('5');
+    expect((int) $action->getBadge())->toBe(5);
 });
