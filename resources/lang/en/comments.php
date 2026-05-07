@@ -2,13 +2,23 @@
 
 return [
     'comments' => [
+        'title' => 'Comments',
+        'count' => 'Comments (:count)',
         'deleted' => 'This comment was deleted.',
+        'deleted_inline' => 'This comment has been deleted',
         'edited' => 'edited',
+        'edited_marker' => '(edited)',
         'no_comments' => 'No comments yet.',
         'placeholder' => 'Write a comment...',
+        'placeholder_edit' => 'Edit your comment...',
+        'placeholder_reply' => 'Write a reply...',
         'load_more' => 'Load more comments',
         'sort_newest' => 'Newest first',
         'sort_oldest' => 'Oldest first',
+        'pinned' => 'Pinned',
+        'posting' => 'Posting...',
+        'submit' => 'Comment',
+        'unknown_user' => 'Unknown',
     ],
 
     'actions' => [
@@ -18,6 +28,9 @@ return [
         'cancel' => 'Cancel',
         'save' => 'Save',
         'submit' => 'Submit',
+        'pin' => 'Pin',
+        'unpin' => 'Unpin',
+        'confirm_delete' => 'Are you sure you want to delete this comment?',
     ],
 
     'reactions' => [
@@ -29,11 +42,15 @@ return [
         'sad' => 'Sad',
         'reacted_by' => ':names reacted with :reaction',
         'and_others' => 'and :count others',
+        'like' => 'Like',
+        'add_reaction' => 'Add reaction',
     ],
 
     'subscriptions' => [
         'subscribe' => 'Subscribe to replies',
         'unsubscribe' => 'Unsubscribe from replies',
+        'subscribe_short' => 'Subscribe',
+        'subscribed_short' => 'Subscribed',
         'subscribed' => 'You will be notified of new replies.',
         'unsubscribed' => 'You will no longer be notified.',
     ],
@@ -47,6 +64,8 @@ return [
         'remove' => 'Remove',
         'too_large' => 'File is too large. Maximum size: :max KB.',
         'invalid_type' => 'File type not allowed.',
+        'attach' => 'Attach',
+        'upload_failed' => 'File upload failed. The file may be too large or an unsupported type.',
     ],
 
     'notifications' => [
