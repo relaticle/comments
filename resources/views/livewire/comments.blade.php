@@ -3,7 +3,7 @@
         wire:poll.{{ \Relaticle\Comments\CommentsConfig::getPollingInterval() }}
     @endif
     x-data="{ uploadError: null }"
-    x-on:livewire-upload-error.window="uploadError = '{{ __('comments::attachments.upload_failed') }}'"
+    x-on:livewire-upload-error.window="uploadError = '{{ __('comments::comments.attachments.upload_failed') }}'"
     x-on:livewire-upload-start.window="uploadError = null"
 >
     <div class="comments-body space-y-4">
@@ -21,13 +21,13 @@
                         <svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
                             <path fill-rule="evenodd" d="M10 2a6 6 0 00-6 6c0 1.887-.454 3.665-1.257 5.234a.75.75 0 00.515 1.076 32.91 32.91 0 003.256.508 3.5 3.5 0 006.972 0 32.903 32.903 0 003.256-.508.75.75 0 00.515-1.076A11.448 11.448 0 0116 8a6 6 0 00-6-6zm0 14.5a2 2 0 01-1.95-1.557 33.146 33.146 0 003.9 0A2 2 0 0110 16.5z" clip-rule="evenodd"/>
                         </svg>
-                        {{ __('comments::subscriptions.subscribed_short') }}
+                        {{ __('comments::comments.subscriptions.subscribed_short') }}
                     @else
                         {{-- Bell icon (outline) --}}
                         <svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0"/>
                         </svg>
-                        {{ __('comments::subscriptions.subscribe_short') }}
+                        {{ __('comments::comments.subscriptions.subscribe_short') }}
                     @endif
                 </button>
                 <button wire:click="toggleSort" type="button"
@@ -111,7 +111,7 @@
                             <svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="m18.375 12.739-7.693 7.693a4.5 4.5 0 0 1-6.364-6.364l10.94-10.94A3 3 0 1 1 19.5 7.372L8.552 18.32m.009-.01-.01.01m5.699-9.941-7.81 7.81a1.5 1.5 0 0 0 2.112 2.13" />
                             </svg>
-                            {{ __('comments::attachments.attach') }}
+                            {{ __('comments::comments.attachments.attach') }}
                             <input type="file" wire:model="attachments" multiple class="hidden" accept="{{ implode(',', \Relaticle\Comments\CommentsConfig::getAttachmentAllowedTypes()) }}" />
                         </label>
                     @else

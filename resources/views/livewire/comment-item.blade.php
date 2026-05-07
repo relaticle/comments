@@ -52,8 +52,8 @@
                     @endif
 
                     <div class="mt-2 flex items-center justify-between">
-                        <button type="button" wire:click="cancelEdit" class="text-xs text-gray-500 hover:text-gray-700 dark:text-gray-400">{{ __('comments::actions.cancel') }}</button>
-                        <button type="button" wire:click="saveEdit" class="text-sm font-medium text-primary-600 hover:text-primary-500 dark:text-primary-400">{{ __('comments::actions.save') }}</button>
+                        <button type="button" wire:click="cancelEdit" class="text-xs text-gray-500 hover:text-gray-700 dark:text-gray-400">{{ __('comments::comments.actions.cancel') }}</button>
+                        <button type="button" wire:click="saveEdit" class="text-sm font-medium text-primary-600 hover:text-primary-500 dark:text-primary-400">{{ __('comments::comments.actions.save') }}</button>
                     </div>
                 </div>
             @else
@@ -95,7 +95,7 @@
                         @can('reply', $comment)
                             <button wire:click="startReply" type="button"
                                 class="text-xs text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
-                                {{ __('comments::actions.reply') }}
+                                {{ __('comments::comments.actions.reply') }}
                             </button>
                         @endcan
                     @endif
@@ -103,16 +103,16 @@
                     @can('update', $comment)
                         <button wire:click="startEdit" type="button"
                             class="text-xs text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
-                            {{ __('comments::actions.edit') }}
+                            {{ __('comments::comments.actions.edit') }}
                         </button>
                     @endcan
 
                     @can('delete', $comment)
                         <button wire:click="deleteComment"
-                            wire:confirm="{{ __('comments::actions.confirm_delete') }}"
+                            wire:confirm="{{ __('comments::comments.actions.confirm_delete') }}"
                             type="button"
                             class="text-xs text-danger-600 hover:text-danger-500 dark:text-danger-400 dark:hover:text-danger-300">
-                            {{ __('comments::actions.delete') }}
+                            {{ __('comments::comments.actions.delete') }}
                         </button>
                     @endcan
 
@@ -123,12 +123,12 @@
                         @if ($comment->isPinned())
                             <button wire:click="$parent.unpinComment({{ $comment->id }})" type="button"
                                 class="text-xs text-amber-600 hover:text-amber-500 dark:text-amber-400 dark:hover:text-amber-300">
-                                {{ __('comments::actions.unpin') }}
+                                {{ __('comments::comments.actions.unpin') }}
                             </button>
                         @else
                             <button wire:click="$parent.pinComment({{ $comment->id }})" type="button"
                                 class="text-xs text-gray-400 hover:text-amber-500 dark:text-gray-500 dark:hover:text-amber-400">
-                                {{ __('comments::actions.pin') }}
+                                {{ __('comments::comments.actions.pin') }}
                             </button>
                         @endif
                     @endif
@@ -140,7 +140,7 @@
         @if ($isReplying)
             <div class="mt-3"
                 x-data="{ uploadError: null }"
-                x-on:livewire-upload-error.window="uploadError = '{{ __('comments::attachments.upload_failed') }}'"
+                x-on:livewire-upload-error.window="uploadError = '{{ __('comments::comments.attachments.upload_failed') }}'"
                 x-on:livewire-upload-start.window="uploadError = null"
             >
                 {{ $this->replyForm }}
@@ -168,13 +168,13 @@
                                 <svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="m18.375 12.739-7.693 7.693a4.5 4.5 0 0 1-6.364-6.364l10.94-10.94A3 3 0 1 1 19.5 7.372L8.552 18.32m.009-.01-.01.01m5.699-9.941-7.81 7.81a1.5 1.5 0 0 0 2.112 2.13" />
                                 </svg>
-                                {{ __('comments::attachments.attach') }}
+                                {{ __('comments::comments.attachments.attach') }}
                                 <input type="file" wire:model="replyAttachments" multiple class="hidden" accept="{{ implode(',', \Relaticle\Comments\CommentsConfig::getAttachmentAllowedTypes()) }}" />
                             </label>
                         @endif
-                        <button type="button" wire:click="cancelReply" class="text-xs text-gray-500 hover:text-gray-700 dark:text-gray-400">{{ __('comments::actions.cancel') }}</button>
+                        <button type="button" wire:click="cancelReply" class="text-xs text-gray-500 hover:text-gray-700 dark:text-gray-400">{{ __('comments::comments.actions.cancel') }}</button>
                     </div>
-                    <button type="button" wire:click="addReply" class="text-sm font-medium text-primary-600 hover:text-primary-500 dark:text-primary-400">{{ __('comments::actions.reply') }}</button>
+                    <button type="button" wire:click="addReply" class="text-sm font-medium text-primary-600 hover:text-primary-500 dark:text-primary-400">{{ __('comments::comments.actions.reply') }}</button>
                 </div>
             </div>
         @endif

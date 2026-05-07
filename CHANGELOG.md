@@ -11,7 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - All user-facing strings now resolve from the `comments::` translation namespace, so `php artisan vendor:publish --tag=comments-translations` overrides actually take effect (#21).
 
 ### Changed
-- BREAKING (translations only): `resources/lang/en/comments.php` was split into per-section files (`comments.php`, `actions.php`, `reactions.php`, `subscriptions.php`, `mentions.php`, `attachments.php`, `notifications.php`). Apps that already published the old single-file structure must re-publish with `php artisan vendor:publish --tag=comments-translations --force`.
+- BREAKING (translations only): All UI strings now resolve from `comments::comments.<key>` (or `comments::comments.<group>.<key>` for grouped sections). Apps that published an earlier draft of `comments.php` should re-publish with `php artisan vendor:publish --tag=comments-translations --force`.
 
 ## v1.0.0-alpha.7 - 2026-04-22
 

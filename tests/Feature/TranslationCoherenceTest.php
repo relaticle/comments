@@ -24,25 +24,25 @@ beforeEach(function (): void {
         'comments.pinned' => 'OVERRIDDEN_PINNED',
         'comments.edited_marker' => 'OVERRIDDEN_EDITED_MARKER',
         'comments.deleted_inline' => 'OVERRIDDEN_DELETED_INLINE',
-        'actions.reply' => 'OVERRIDDEN_REPLY',
-        'actions.edit' => 'OVERRIDDEN_EDIT',
-        'actions.delete' => 'OVERRIDDEN_DELETE',
-        'actions.cancel' => 'OVERRIDDEN_CANCEL',
-        'actions.save' => 'OVERRIDDEN_SAVE',
-        'actions.pin' => 'OVERRIDDEN_PIN',
-        'actions.unpin' => 'OVERRIDDEN_UNPIN',
-        'actions.confirm_delete' => 'OVERRIDDEN_CONFIRM_DELETE',
-        'subscriptions.subscribe_short' => 'OVERRIDDEN_SUBSCRIBE_SHORT',
-        'subscriptions.subscribed_short' => 'OVERRIDDEN_SUBSCRIBED_SHORT',
-        'attachments.attach' => 'OVERRIDDEN_ATTACH',
-        'attachments.upload_failed' => 'OVERRIDDEN_UPLOAD_FAILED',
-        'reactions.like' => 'OVERRIDDEN_LIKE',
-        'reactions.add_reaction' => 'OVERRIDDEN_ADD_REACTION',
-        'reactions.and_others' => 'OVERRIDDEN_AND_:count_OTHERS',
-        'notifications.reply_subject' => 'OVERRIDDEN_REPLY_SUBJECT',
-        'notifications.reply_body' => 'OVERRIDDEN_REPLY_BODY_BY_:name',
-        'notifications.mention_subject' => 'OVERRIDDEN_MENTION_SUBJECT',
-        'notifications.mention_body' => 'OVERRIDDEN_MENTION_BODY_BY_:name',
+        'comments.actions.reply' => 'OVERRIDDEN_REPLY',
+        'comments.actions.edit' => 'OVERRIDDEN_EDIT',
+        'comments.actions.delete' => 'OVERRIDDEN_DELETE',
+        'comments.actions.cancel' => 'OVERRIDDEN_CANCEL',
+        'comments.actions.save' => 'OVERRIDDEN_SAVE',
+        'comments.actions.pin' => 'OVERRIDDEN_PIN',
+        'comments.actions.unpin' => 'OVERRIDDEN_UNPIN',
+        'comments.actions.confirm_delete' => 'OVERRIDDEN_CONFIRM_DELETE',
+        'comments.subscriptions.subscribe_short' => 'OVERRIDDEN_SUBSCRIBE_SHORT',
+        'comments.subscriptions.subscribed_short' => 'OVERRIDDEN_SUBSCRIBED_SHORT',
+        'comments.attachments.attach' => 'OVERRIDDEN_ATTACH',
+        'comments.attachments.upload_failed' => 'OVERRIDDEN_UPLOAD_FAILED',
+        'comments.reactions.like' => 'OVERRIDDEN_LIKE',
+        'comments.reactions.add_reaction' => 'OVERRIDDEN_ADD_REACTION',
+        'comments.reactions.and_others' => 'OVERRIDDEN_AND_:count_OTHERS',
+        'comments.notifications.reply_subject' => 'OVERRIDDEN_REPLY_SUBJECT',
+        'comments.notifications.reply_body' => 'OVERRIDDEN_REPLY_BODY_BY_:name',
+        'comments.notifications.mention_subject' => 'OVERRIDDEN_MENTION_SUBJECT',
+        'comments.notifications.mention_body' => 'OVERRIDDEN_MENTION_BODY_BY_:name',
     ], 'en', 'comments');
 });
 
@@ -52,11 +52,11 @@ it('resolves comments::* keys from package lang files (without addLines)', funct
 
     expect(__('comments::comments.placeholder'))->not->toStartWith('comments::');
     expect(__('comments::comments.title'))->not->toStartWith('comments::');
-    expect(__('comments::actions.reply'))->not->toStartWith('comments::');
-    expect(__('comments::reactions.like'))->not->toStartWith('comments::');
-    expect(__('comments::subscriptions.subscribe_short'))->not->toStartWith('comments::');
-    expect(__('comments::attachments.attach'))->not->toStartWith('comments::');
-    expect(__('comments::notifications.reply_subject'))->not->toStartWith('comments::');
+    expect(__('comments::comments.actions.reply'))->not->toStartWith('comments::');
+    expect(__('comments::comments.reactions.like'))->not->toStartWith('comments::');
+    expect(__('comments::comments.subscriptions.subscribe_short'))->not->toStartWith('comments::');
+    expect(__('comments::comments.attachments.attach'))->not->toStartWith('comments::');
+    expect(__('comments::comments.notifications.reply_subject'))->not->toStartWith('comments::');
 });
 
 it('uses the comments translation namespace for the new-comment placeholder', function (): void {

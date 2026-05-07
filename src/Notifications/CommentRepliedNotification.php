@@ -35,8 +35,8 @@ class CommentRepliedNotification extends Notification
         $commenterName = $this->comment->commenter->getCommentDisplayName();
 
         return (new MailMessage)
-            ->subject(__('comments::notifications.reply_subject'))
-            ->line(__('comments::notifications.reply_body', ['name' => $commenterName]))
+            ->subject(__('comments::comments.notifications.reply_subject'))
+            ->line(__('comments::comments.notifications.reply_body', ['name' => $commenterName]))
             ->line(Str::limit(strip_tags($this->comment->body), 200));
     }
 }
