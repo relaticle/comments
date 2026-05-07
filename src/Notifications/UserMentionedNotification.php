@@ -39,8 +39,8 @@ class UserMentionedNotification extends Notification
         $mentionerName = $this->mentionedBy->getCommentDisplayName();
 
         return (new MailMessage)
-            ->subject('You were mentioned in a comment')
-            ->line("{$mentionerName} mentioned you in a comment:")
+            ->subject(__('comments::notifications.mention_subject'))
+            ->line(__('comments::notifications.mention_body', ['name' => $mentionerName]))
             ->line(Str::limit(strip_tags($this->comment->body), 200));
     }
 }
