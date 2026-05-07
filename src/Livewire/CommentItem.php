@@ -52,7 +52,7 @@ class CommentItem extends Component implements HasActions, HasForms
                 RichEditor::make('body')
                     ->hiddenLabel()
                     ->required()
-                    ->placeholder(__('Edit your comment...'))
+                    ->placeholder(__('comments::comments.placeholder_edit'))
                     ->toolbarButtons(CommentsConfig::getEditorToolbar())
                     ->mentions([
                         CommentsConfig::makeMentionProvider(),
@@ -68,7 +68,7 @@ class CommentItem extends Component implements HasActions, HasForms
                 RichEditor::make('body')
                     ->hiddenLabel()
                     ->required()
-                    ->placeholder(__('Write a reply...'))
+                    ->placeholder(__('comments::comments.placeholder_reply'))
                     ->toolbarButtons(CommentsConfig::getEditorToolbar())
                     ->mentions([
                         CommentsConfig::makeMentionProvider(),
