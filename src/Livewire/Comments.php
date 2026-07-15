@@ -55,14 +55,13 @@ class Comments extends Component implements HasActions, HasForms
     {
         return $schema
             ->components([
-                RichEditor::make('body')
-                    ->hiddenLabel()
-                    ->required()
-                    ->placeholder(__('comments::comments.placeholder'))
-                    ->toolbarButtons(CommentsConfig::getEditorToolbar())
-                    ->mentions([
-                        CommentsConfig::makeMentionProvider(),
-                    ]),
+                CommentsConfig::applyMentionProvider(
+                    RichEditor::make('body')
+                        ->hiddenLabel()
+                        ->required()
+                        ->placeholder(__('comments::comments.placeholder'))
+                        ->toolbarButtons(CommentsConfig::getEditorToolbar())
+                ),
             ])
             ->statePath('commentData');
     }

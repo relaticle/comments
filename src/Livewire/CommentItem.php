@@ -49,14 +49,13 @@ class CommentItem extends Component implements HasActions, HasForms
     {
         return $schema
             ->components([
-                RichEditor::make('body')
-                    ->hiddenLabel()
-                    ->required()
-                    ->placeholder(__('comments::comments.placeholder_edit'))
-                    ->toolbarButtons(CommentsConfig::getEditorToolbar())
-                    ->mentions([
-                        CommentsConfig::makeMentionProvider(),
-                    ]),
+                CommentsConfig::applyMentionProvider(
+                    RichEditor::make('body')
+                        ->hiddenLabel()
+                        ->required()
+                        ->placeholder(__('comments::comments.placeholder_edit'))
+                        ->toolbarButtons(CommentsConfig::getEditorToolbar())
+                ),
             ])
             ->statePath('editData');
     }
@@ -65,14 +64,13 @@ class CommentItem extends Component implements HasActions, HasForms
     {
         return $schema
             ->components([
-                RichEditor::make('body')
-                    ->hiddenLabel()
-                    ->required()
-                    ->placeholder(__('comments::comments.placeholder_reply'))
-                    ->toolbarButtons(CommentsConfig::getEditorToolbar())
-                    ->mentions([
-                        CommentsConfig::makeMentionProvider(),
-                    ]),
+                CommentsConfig::applyMentionProvider(
+                    RichEditor::make('body')
+                        ->hiddenLabel()
+                        ->required()
+                        ->placeholder(__('comments::comments.placeholder_reply'))
+                        ->toolbarButtons(CommentsConfig::getEditorToolbar())
+                ),
             ])
             ->statePath('replyData');
     }

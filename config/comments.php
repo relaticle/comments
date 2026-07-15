@@ -51,6 +51,12 @@ return [
     ],
 
     'mentions' => [
+        /*
+         | Enable @mention autocomplete in the comment editor and mention
+         | notifications. Set to false to turn the feature off entirely.
+         */
+        'enabled' => true,
+
         'resolver' => DefaultMentionResolver::class,
         'max_results' => 5,
 

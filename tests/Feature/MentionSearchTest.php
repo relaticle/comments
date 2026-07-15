@@ -1,6 +1,7 @@
 <?php
 
 use Livewire\Livewire;
+use Relaticle\Comments\CommentsConfig;
 use Relaticle\Comments\Livewire\CommentItem;
 use Relaticle\Comments\Livewire\Comments;
 use Relaticle\Comments\Models\Comment;
@@ -48,4 +49,16 @@ it('stores mentions when editing comment with @mention', function () {
 
     expect($comment->mentions)->toHaveCount(1);
     expect($comment->mentions->first()->id)->toBe($bob->id);
+});
+
+it('orders mention search results by the first search column, not the name column', function () {
+    config()->set('comments.mentions.search_columns', ['name']);
+    config()->set('comments.mentions.name_column', 'email');
+
+    $first = User::factory()->create(['name' => 'Aaron Example', 'email' => 'zzz@example.com']);
+    User::factory()->create(['name' => 'Zoe Example', 'email' => 'aaa@example.com']);
+
+    $results = CommentsConfig::makeMentionProvider()->getSearchResults('Example');
+
+    expect((int) array_key_first($results))->toBe((int) $first->getKey());
 });

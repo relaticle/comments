@@ -4,6 +4,7 @@ namespace Relaticle\Comments;
 
 use App\Models\User;
 use Closure;
+use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\RichEditor\MentionProvider;
 use Illuminate\Support\Facades\Gate;
 use Relaticle\Comments\Mentions\DefaultMentionResolver;
@@ -79,6 +80,11 @@ class CommentsConfig
     public static function getMentionResolver(): string
     {
         return config('comments.mentions.resolver', DefaultMentionResolver::class);
+    }
+
+    public static function areMentionsEnabled(): bool
+    {
+        return (bool) config('comments.mentions.enabled', true);
     }
 
     public static function getMentionMaxResults(): int
@@ -288,7 +294,7 @@ class CommentsConfig
                 }
 
                 return $query
-                    ->orderBy(static::getMentionNameColumn())
+                    ->orderBy(static::getMentionSearchColumns()[0])
                     ->limit(static::getMentionMaxResults())
                     ->get()
                     ->mapWithKeys(fn ($user) => [$user->getKey() => static::getUserName($user)])
@@ -299,5 +305,14 @@ class CommentsConfig
                 ->get()
                 ->mapWithKeys(fn ($user) => [$user->getKey() => static::getUserName($user)])
                 ->all());
+    }
+
+    public static function applyMentionProvider(RichEditor $editor): RichEditor
+    {
+        if (! static::areMentionsEnabled()) {
+            return $editor;
+        }
+
+        return $editor->mentions([static::makeMentionProvider()]);
     }
 }

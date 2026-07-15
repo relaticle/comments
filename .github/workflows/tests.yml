@@ -16,12 +16,17 @@ jobs:
         os: [ubuntu-latest]
         php: [8.2, 8.3, 8.4]
         laravel: [12.*]
+        filament: [4, 5]
         stability: [prefer-stable]
+        exclude:
+          # Filament 5 pulls Livewire 4 / pest-plugin-livewire 4, which need PHP 8.3+
+          - php: 8.2
+            filament: 5
         include:
           - laravel: 12.*
             testbench: 10.*
 
-    name: P${{ matrix.php }} - L${{ matrix.laravel }} - ${{ matrix.stability }} - ${{ matrix.os }}
+    name: P${{ matrix.php }} - L${{ matrix.laravel }} - F${{ matrix.filament }} - ${{ matrix.stability }} - ${{ matrix.os }}
 
     steps:
       - name: Checkout code
@@ -41,7 +46,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          composer require "laravel/framework:${{ matrix.laravel }}" "orchestra/testbench:${{ matrix.testbench }}" --no-interaction --no-update
+          composer require "laravel/framework:${{ matrix.laravel }}" "orchestra/testbench:${{ matrix.testbench }}" "filament/filament:^${{ matrix.filament }}.0" "filament/notifications:^${{ matrix.filament }}.0" "filament/support:^${{ matrix.filament }}.0" --no-interaction --no-update
           composer update --${{ matrix.stability }} --prefer-dist --no-interaction
 
       - name: List Installed Dependencies
