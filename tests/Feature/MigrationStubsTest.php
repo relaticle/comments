@@ -57,12 +57,15 @@ it('runs the published migration stubs and names long indexes explicitly', funct
         expect(Schema::connection($connection)->hasTable('comments'))->toBeTrue()
             ->and(Schema::connection($connection)->hasTable('comment_reactions'))->toBeTrue();
 
-        $indexNames = collect(DB::connection($connection)->select("PRAGMA index_list('comment_reactions')"))
+        $reactionIndexes = collect(DB::connection($connection)->select("PRAGMA index_list('comment_reactions')"))
+            ->pluck('name');
+        $mentionIndexes = collect(DB::connection($connection)->select("PRAGMA index_list('comment_mentions')"))
             ->pluck('name');
 
-        expect($indexNames)->toContain('comment_reactions_unique');
+        expect($reactionIndexes)->toContain('comment_reactions_unique')
+            ->and($mentionIndexes)->toContain('comment_mentions_unique');
 
-        foreach ($indexNames as $indexName) {
+        foreach ($reactionIndexes->merge($mentionIndexes) as $indexName) {
             expect(strlen((string) $indexName))->toBeLessThanOrEqual(63);
         }
     } finally {
@@ -70,3 +73,41 @@ it('runs the published migration stubs and names long indexes explicitly', funct
         @rmdir($tmpDir);
     }
 });
+
+it('creates a nullable tenant column when multi-tenancy is enabled', function (string $type) {
+    config()->set('comments.multi_tenancy.enabled', true);
+    config()->set('comments.multi_tenancy.tenant_column', 'tenant_id');
+    config()->set('comments.multi_tenancy.tenant_column_type', $type);
+
+    $connection = 'stub_tenant_test';
+
+    config()->set("database.connections.{$connection}", [
+        'driver' => 'sqlite',
+        'database' => ':memory:',
+        'prefix' => '',
+    ]);
+
+    $stubDir = dirname(__DIR__, 2).'/database/migrations';
+    $tmpDir = sys_get_temp_dir().'/comments_tenant_'.Str::random(8);
+    mkdir($tmpDir);
+    copy("{$stubDir}/create_comments_table.php.stub", "{$tmpDir}/2024_01_01_000001_create_comments_table.php");
+
+    try {
+        $this->artisan('migrate', [
+            '--database' => $connection,
+            '--path' => $tmpDir,
+            '--realpath' => true,
+        ])->assertSuccessful();
+
+        expect(Schema::connection($connection)->hasColumn('comments', 'tenant_id'))->toBeTrue();
+
+        $tenantColumn = collect(Schema::connection($connection)->getColumns('comments'))
+            ->firstWhere('name', 'tenant_id');
+
+        expect($tenantColumn)->not->toBeNull()
+            ->and($tenantColumn['nullable'])->toBeTrue();
+    } finally {
+        array_map('unlink', glob("{$tmpDir}/*") ?: []);
+        @rmdir($tmpDir);
+    }
+})->with(['unsignedBigInteger', 'uuid', 'string']);
