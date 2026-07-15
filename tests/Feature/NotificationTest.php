@@ -31,7 +31,7 @@ it('returns correct via channels from config for CommentRepliedNotification', fu
     expect($notification->via($user))->toBe(['database', 'mail']);
 });
 
-it('returns toDatabase array with comment data for CommentRepliedNotification', function () {
+it('returns a filament-format toDatabase payload for CommentRepliedNotification', function () {
     $user = User::factory()->create();
     $post = Post::factory()->create();
 
@@ -40,17 +40,38 @@ it('returns toDatabase array with comment data for CommentRepliedNotification', 
         'commentable_type' => $post->getMorphClass(),
         'commenter_id' => $user->getKey(),
         'commenter_type' => $user->getMorphClass(),
-        'body' => '<p>This is a reply body</p>',
+        'body' => '<p>This is a reply to @bob</p>',
     ]);
 
     $notification = new CommentRepliedNotification($comment);
     $data = $notification->toDatabase($user);
 
-    expect($data)->toHaveKeys(['comment_id', 'commentable_type', 'commentable_id', 'commenter_name', 'body'])
+    expect($data)->toHaveKeys(['format', 'title', 'body', 'comment_id', 'commentable_type', 'commentable_id', 'commenter_name'])
+        ->and($data['format'])->toBe('filament')
         ->and($data['comment_id'])->toBe($comment->id)
         ->and($data['commentable_type'])->toBe($post->getMorphClass())
         ->and($data['commentable_id'])->toBe($post->id)
-        ->and($data['commenter_name'])->toBe($user->getCommentDisplayName());
+        ->and($data['commenter_name'])->toBe($user->getCommentDisplayName())
+        ->and($data['body'])->toContain('@bob')
+        ->and($data['body'])->not->toContain('&#64;');
+});
+
+it('decodes html entities in the CommentRepliedNotification mail body', function () {
+    $user = User::factory()->create();
+    $post = Post::factory()->create();
+
+    $comment = Comment::factory()->create([
+        'commentable_id' => $post->id,
+        'commentable_type' => $post->getMorphClass(),
+        'commenter_id' => $user->getKey(),
+        'commenter_type' => $user->getMorphClass(),
+        'body' => '<p>Reply mentioning @bob here</p>',
+    ]);
+
+    $mail = (new CommentRepliedNotification($comment))->toMail($user);
+    $lines = implode("\n", array_merge($mail->introLines, $mail->outroLines));
+
+    expect($lines)->toContain('@bob')->not->toContain('&#64;');
 });
 
 it('returns correct via channels from config for UserMentionedNotification', function () {
@@ -73,7 +94,7 @@ it('returns correct via channels from config for UserMentionedNotification', fun
     expect($notification->via($user))->toBe(['database']);
 });
 
-it('returns toDatabase array with mention data for UserMentionedNotification', function () {
+it('returns a filament-format toDatabase payload for UserMentionedNotification', function () {
     $mentioner = User::factory()->create();
     $mentioned = User::factory()->create();
     $post = Post::factory()->create();
@@ -83,15 +104,18 @@ it('returns toDatabase array with mention data for UserMentionedNotification', f
         'commentable_type' => $post->getMorphClass(),
         'commenter_id' => $mentioner->getKey(),
         'commenter_type' => $mentioner->getMorphClass(),
-        'body' => '<p>Hey @mentioned</p>',
+        'body' => '<p>Hey @mentioned welcome aboard</p>',
     ]);
 
     $notification = new UserMentionedNotification($comment, $mentioner);
     $data = $notification->toDatabase($mentioned);
 
-    expect($data)->toHaveKeys(['comment_id', 'commentable_type', 'commentable_id', 'mentioner_name', 'body'])
+    expect($data)->toHaveKeys(['format', 'title', 'body', 'comment_id', 'commentable_type', 'commentable_id', 'mentioner_name'])
+        ->and($data['format'])->toBe('filament')
         ->and($data['comment_id'])->toBe($comment->id)
-        ->and($data['mentioner_name'])->toBe($mentioner->getCommentDisplayName());
+        ->and($data['mentioner_name'])->toBe($mentioner->getCommentDisplayName())
+        ->and($data['body'])->toContain('@mentioned')
+        ->and($data['body'])->not->toContain('&#64;');
 });
 
 it('sends notification to subscribers when reply comment is created', function () {

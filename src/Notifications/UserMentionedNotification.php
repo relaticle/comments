@@ -2,6 +2,7 @@
 
 namespace Relaticle\Comments\Notifications;
 
+use Filament\Notifications\Notification as FilamentNotification;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
@@ -25,13 +26,21 @@ class UserMentionedNotification extends Notification
     /** @return array<string, mixed> */
     public function toDatabase(mixed $notifiable): array
     {
-        return [
-            'comment_id' => $this->comment->id,
-            'commentable_type' => $this->comment->commentable_type,
-            'commentable_id' => $this->comment->commentable_id,
-            'mentioner_name' => $this->mentionedBy->getCommentDisplayName(),
-            'body' => Str::limit(strip_tags($this->comment->body), 100),
-        ];
+        $mentionerName = $this->mentionedBy->getCommentDisplayName();
+
+        return array_merge(
+            FilamentNotification::make()
+                ->title(__('comments::comments.notifications.mention_body', ['name' => $mentionerName]))
+                ->body($this->bodyExcerpt(100))
+                ->icon('heroicon-o-at-symbol')
+                ->getDatabaseMessage(),
+            [
+                'comment_id' => $this->comment->id,
+                'commentable_type' => $this->comment->commentable_type,
+                'commentable_id' => $this->comment->commentable_id,
+                'mentioner_name' => $mentionerName,
+            ],
+        );
     }
 
     public function toMail(mixed $notifiable): MailMessage
@@ -41,6 +50,14 @@ class UserMentionedNotification extends Notification
         return (new MailMessage)
             ->subject(__('comments::comments.notifications.mention_subject'))
             ->line(__('comments::comments.notifications.mention_body', ['name' => $mentionerName]))
-            ->line(Str::limit(strip_tags($this->comment->body), 200));
+            ->line($this->bodyExcerpt(200));
+    }
+
+    protected function bodyExcerpt(int $limit): string
+    {
+        return Str::limit(
+            html_entity_decode(strip_tags($this->comment->body), ENT_QUOTES, 'UTF-8'),
+            $limit,
+        );
     }
 }

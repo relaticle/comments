@@ -58,6 +58,10 @@ class MentionParser
 
     public function syncMentions(Comment $comment): void
     {
+        if (! CommentsConfig::areMentionsEnabled()) {
+            return;
+        }
+
         $newMentionIds = $this->parse($comment->body);
         $existingMentionIds = $comment->mentions()->pluck('comment_mentions.commenter_id');
 
