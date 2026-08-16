@@ -1,7 +1,9 @@
 <?php
 
+use Illuminate\Support\Collection;
 use Livewire\Livewire;
 use Relaticle\Comments\CommentsConfig;
+use Relaticle\Comments\Contracts\MentionResolver;
 use Relaticle\Comments\Livewire\CommentItem;
 use Relaticle\Comments\Livewire\Comments;
 use Relaticle\Comments\Models\Comment;
@@ -61,4 +63,26 @@ it('orders mention search results by the first search column, not the name colum
     $results = CommentsConfig::makeMentionProvider()->getSearchResults('Example');
 
     expect((int) array_key_first($results))->toBe((int) $first->getKey());
+});
+
+it('delegates mention autocomplete to the bound mention resolver', function () {
+    $alice = User::factory()->create(['name' => 'Alice']);
+    User::factory()->create(['name' => 'Alicia']);
+
+    app()->bind(MentionResolver::class, fn () => new class implements MentionResolver
+    {
+        public function search(string $query): Collection
+        {
+            return User::query()->where('name', 'Alice')->get();
+        }
+
+        public function resolveByNames(array $names): Collection
+        {
+            return User::query()->whereIn('name', $names)->get();
+        }
+    });
+
+    $results = CommentsConfig::makeMentionProvider()->getSearchResults('Ali');
+
+    expect($results)->toBe([$alice->getKey() => 'Alice']);
 });

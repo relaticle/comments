@@ -7,6 +7,7 @@ use Closure;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\RichEditor\MentionProvider;
 use Illuminate\Support\Facades\Gate;
+use Relaticle\Comments\Contracts\MentionResolver as MentionResolverContract;
 use Relaticle\Comments\Mentions\DefaultMentionResolver;
 use Relaticle\Comments\Models\Comment;
 use Relaticle\Comments\Policies\CommentPolicy;
@@ -285,21 +286,10 @@ class CommentsConfig
     public static function makeMentionProvider(): MentionProvider
     {
         return MentionProvider::make('@')
-            ->getSearchResultsUsing(function (string $search): array {
-                $query = static::getCommenterModel()::query();
-
-                foreach (static::getMentionSearchColumns() as $index => $column) {
-                    $method = $index === 0 ? 'where' : 'orWhere';
-                    $query->{$method}($column, 'like', "%{$search}%");
-                }
-
-                return $query
-                    ->orderBy(static::getMentionSearchColumns()[0])
-                    ->limit(static::getMentionMaxResults())
-                    ->get()
-                    ->mapWithKeys(fn ($user) => [$user->getKey() => static::getUserName($user)])
-                    ->all();
-            })
+            ->getSearchResultsUsing(fn (string $search): array => app(MentionResolverContract::class)
+                ->search($search)
+                ->mapWithKeys(fn ($user) => [$user->getKey() => static::getUserName($user)])
+                ->all())
             ->getLabelsUsing(fn (array $ids): array => static::getCommenterModel()::query()
                 ->whereIn('id', $ids)
                 ->get()

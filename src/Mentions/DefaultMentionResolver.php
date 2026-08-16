@@ -14,13 +14,15 @@ class DefaultMentionResolver implements MentionResolver
     {
         $model = CommentsConfig::getCommenterModel();
         $builder = $model::query();
+        $columns = CommentsConfig::getMentionSearchColumns();
 
-        foreach (CommentsConfig::getMentionSearchColumns() as $index => $column) {
+        foreach ($columns as $index => $column) {
             $method = $index === 0 ? 'where' : 'orWhere';
-            $builder->{$method}($column, 'like', "{$query}%");
+            $builder->{$method}($column, 'like', "%{$query}%");
         }
 
         return $builder
+            ->orderBy($columns[0])
             ->limit(CommentsConfig::getMentionMaxResults())
             ->get();
     }
