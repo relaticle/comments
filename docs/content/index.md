@@ -14,10 +14,6 @@ A full-featured commenting system for Filament panels with threaded replies, @me
 
 Drop-in integration with any Filament resource.
 
-:::callout{icon="i-lucide-triangle-alert" color="amber"}
-**Alpha Software** — Breaking changes may occur between releases. Not recommended for production use.
-:::
-
 #links
   :::u-button
   ---
