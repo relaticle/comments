@@ -1,4 +1,10 @@
+{{--
+    The flex layout that pins the comment form to the bottom of the slide-over is
+    inlined so it works even when the stylesheet served by CommentsStyleController
+    is unavailable (blocked route, proxy, stale cache) — see issue #28.
+--}}
 <div class="comments-wrap"
+    style="display: flex; flex-direction: column; flex: 1 1 0%; min-height: 0;"
     @if (!\Relaticle\Comments\CommentsConfig::isBroadcastingEnabled())
         wire:poll.{{ \Relaticle\Comments\CommentsConfig::getPollingInterval() }}
     @endif
@@ -6,7 +12,7 @@
     x-on:livewire-upload-error.window="uploadError = {{ Illuminate\Support\Js::from(__('comments::comments.attachments.upload_failed')) }}"
     x-on:livewire-upload-start.window="uploadError = null"
 >
-    <div class="comments-body space-y-4">
+    <div class="comments-body space-y-4" style="flex: 1 1 0%; min-height: 0; overflow-y: auto;">
     {{-- Sort toggle --}}
     <div class="flex items-center justify-between">
         <h3 class="text-sm font-medium text-gray-700 dark:text-gray-300">
@@ -87,7 +93,8 @@
     {{-- New comment form - sticky at bottom of slide-over --}}
     @auth
         @can('create', \Relaticle\Comments\CommentsConfig::getCommentModel())
-            <div class="shrink-0 border-t border-gray-200 bg-white px-6 pt-3 dark:border-gray-700 dark:bg-gray-900 -mx-6">                {{ $this->commentForm }}
+            <div class="shrink-0 border-t border-gray-200 bg-white px-6 pt-3 dark:border-gray-700 dark:bg-gray-900 -mx-6" style="flex-shrink: 0;">
+                {{ $this->commentForm }}
 
                 @if (!empty($attachments))
                     <div class="mt-2 flex flex-wrap gap-2">
