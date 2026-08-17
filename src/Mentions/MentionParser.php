@@ -14,7 +14,7 @@ class MentionParser
         protected MentionResolver $resolver,
     ) {}
 
-    /** @return Collection<int, int> */
+    /** @return Collection<int, int|string> */
     public function parse(string $body): Collection
     {
         $ids = $this->parseRichEditorMentions($body);
@@ -26,21 +26,29 @@ class MentionParser
         return $this->parsePlainTextMentions($body);
     }
 
-    /** @return Collection<int, int> */
+    /**
+     * Commenter keys may be integers, ULIDs, or UUIDs — the id is captured
+     * verbatim, with numeric strings normalised back to int for integer keys.
+     *
+     * @return Collection<int, int|string>
+     */
     protected function parseRichEditorMentions(string $body): Collection
     {
-        preg_match_all('/data-type=["\']mention["\'][^>]*data-id=["\'](\d+)["\']/', $body, $matches);
+        preg_match_all('/data-type=["\']mention["\'][^>]*data-id=["\']([^"\']+)["\']/', $body, $matches);
 
         if (empty($matches[1])) {
-            preg_match_all('/data-id=["\'](\d+)["\'][^>]*data-type=["\']mention["\']/', $body, $matches);
+            preg_match_all('/data-id=["\']([^"\']+)["\'][^>]*data-type=["\']mention["\']/', $body, $matches);
         }
 
-        $ids = array_unique(array_map('intval', $matches[1] ?? []));
+        $ids = array_map(
+            fn (string $id): int|string => is_numeric($id) ? (int) $id : $id,
+            array_unique($matches[1] ?? []),
+        );
 
-        return collect($ids);
+        return collect(array_values($ids));
     }
 
-    /** @return Collection<int, int> */
+    /** @return Collection<int, int|string> */
     protected function parsePlainTextMentions(string $body): Collection
     {
         $text = html_entity_decode(strip_tags($body), ENT_QUOTES, 'UTF-8');
