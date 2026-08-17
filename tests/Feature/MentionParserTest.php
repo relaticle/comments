@@ -21,6 +21,15 @@ it('parses rich-editor mention spans using data-id', function () {
     expect($result->first())->toBe($john->id);
 });
 
+it('parses rich-editor mention spans whose data-id is not an integer (ulid/uuid commenter keys)', function () {
+    $parser = app(MentionParser::class);
+    $body = '<p><span data-type="mention" data-id="01m07ry393v7mkm33trc26h8dr" data-label="Tessa" data-char="@">@Tessa</span></p>';
+
+    $result = $parser->parse($body);
+
+    expect($result->all())->toBe(['01m07ry393v7mkm33trc26h8dr']);
+});
+
 it('parses @username from plain text body', function () {
     User::factory()->create(['name' => 'john']);
     User::factory()->create(['name' => 'jane']);
