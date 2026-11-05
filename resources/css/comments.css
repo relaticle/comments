@@ -32,4 +32,8 @@
     min-height: 0;
 }
 
-
+/* Cap the editor so long pasted content scrolls inside it instead of pushing the submit button out of the slide-over */
+.comments-wrap .fi-fo-rich-editor-main {
+    max-height: 40vh;
+    overflow-y: auto;
+}
